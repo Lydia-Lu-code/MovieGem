@@ -32,32 +32,3 @@ class MovieTicketService: MovieTicketServiceProtocol {
         return true
     }
 }
-
-////
-////  Service.swift
-////  MovieGem
-////
-////  Created by Lydia Lu on 2025/1/9.
-////
-//
-//import Foundation
-//
-//protocol MovieTicketServiceProtocol {
-//    func fetchTickets() async throws -> [MovieTicket]
-//}
-//
-//class MovieTicketService: MovieTicketServiceProtocol {
-//    func fetchTickets() async throws -> [MovieTicket] {
-//        // 模擬網路請求延遲
-//        try await Task.sleep(nanoseconds: 1_000_000_000)
-//        return [
-//            MovieTicket(id: "1",
-//                       movieName: "測試電影",
-//                       dateTime: Date(),
-//                       seatNumber: "A1",
-//                       price: 280.0)
-//        ]
-//    }
-//}
-//
-//

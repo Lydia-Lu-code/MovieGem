@@ -6,6 +6,8 @@ class MovieAdminViewController: UIViewController {
     // MARK: - Properties
     private var cancellables = Set<AnyCancellable>()
     
+    private var showtimes: [MovieShowtime] = []
+    
     // MARK: - UI Components
     private lazy var scrollView: UIScrollView = {
         let scroll = UIScrollView()
@@ -61,13 +63,25 @@ class MovieAdminViewController: UIViewController {
         return view
     }()
     
+    
+    
     private lazy var showTimeCalendar: UICalendarView = {
         let calendar = UICalendarView()
         calendar.calendar = .current
         calendar.locale = .current
         calendar.translatesAutoresizingMaskIntoConstraints = false
+        
+        // 設置日曆視圖的樣式
+        let gregorianCalendar = Calendar(identifier: .gregorian)
+        calendar.calendar = gregorianCalendar
+        
+        // 自定義日曆外觀
+        let dateSelection = UICalendarSelectionSingleDate(delegate: self)
+        calendar.selectionBehavior = dateSelection
+        
         return calendar
     }()
+    
     
     private lazy var showTimeTableView: UITableView = {
         let table = UITableView()
@@ -82,6 +96,10 @@ class MovieAdminViewController: UIViewController {
         setupUI()
         setupConstraints()
         setupInitialData()
+        
+        // 設置 table view
+        showTimeTableView.dataSource = self
+        showTimeTableView.delegate = self
     }
     
     // MARK: - UI Setup
@@ -175,24 +193,67 @@ class MovieAdminViewController: UIViewController {
         case 0: // 影廳管理
             theaterManagementView.isHidden = false
             showTimeManagementView.isHidden = true
+            goToTheaterManagement()
         case 1: // 場次管理
             theaterManagementView.isHidden = true
             showTimeManagementView.isHidden = false
+            goToShowtimeManagement()
         case 2: // 票價設定
-            // TODO: 實作票價設定視圖
-            break
+            goToPriceManagement()
         case 3: // 座位圖
-            // TODO: 實作座位圖視圖
-            break
+            goToTheaterDetail()
         default:
             break
         }
     }
     
+    // 添加新的導航方法
+    @objc func goToTheaterManagement() {
+        let theaterManagementVC = TheaterManagementViewController()
+        navigationController?.pushViewController(theaterManagementVC, animated: true)
+    }
+    
+    @objc func goToShowtimeManagement() {
+        let showtimeManagementVC = ShowtimeManagementViewController()
+        navigationController?.pushViewController(showtimeManagementVC, animated: true)
+    }
+    
+    @objc func goToPriceManagement() {
+        let priceManagementVC = PriceManagementViewController()
+        navigationController?.pushViewController(priceManagementVC, animated: true)
+    }
+    
+    @objc func goToTheaterDetail() {
+        // 創建 GoogleSheetsService
+        let sheetsService = GoogleSheetsService(apiEndpoint: SheetDBConfig.apiEndpoint)
+        
+        // 創建 ViewModel
+        let movieSheetViewModel = MovieSheetViewModel(sheetsService: sheetsService)
+        
+        // 創建默認的 Theater 實例
+        let defaultTheater = Theater(
+            id: UUID().uuidString,
+            name: "預設影廳",
+            capacity: 100,
+            type: .standard,
+            status: .active,
+            seatLayout: [[.normal, .normal, .normal],
+                         [.normal, .vip, .normal],
+                         [.normal, .normal, .normal]]
+        )
+        
+        // 創建 TheaterDetailViewController
+        let theaterDetailVC = TheaterDetailViewController(theater: defaultTheater, viewModel: movieSheetViewModel)
+        
+        navigationController?.pushViewController(theaterDetailVC, animated: true)
+    }
+    
+
+    
     @objc private func addTheaterTapped() {
         let alert = UIAlertController(title: "新增影廳",
-                                    message: "請輸入影廳資訊",
-                                    preferredStyle: .alert)
+                                      message: "請輸入影廳資訊",
+                                      preferredStyle: .alert)
         
         alert.addTextField { textField in
             textField.placeholder = "影廳名稱"
@@ -213,8 +274,8 @@ class MovieAdminViewController: UIViewController {
     
     @objc private func settingsTapped() {
         let alert = UIAlertController(title: "設定",
-                                    message: nil,
-                                    preferredStyle: .actionSheet)
+                                      message: nil,
+                                      preferredStyle: .actionSheet)
         
         alert.addAction(UIAlertAction(title: "系統設定", style: .default))
         alert.addAction(UIAlertAction(title: "使用者管理", style: .default))
@@ -226,6 +287,90 @@ class MovieAdminViewController: UIViewController {
     
     // MARK: - Data Setup
     private func setupInitialData() {
-        // TODO: 載入初始資料
+        // 加載場次數據
+        loadShowtimes()
+    }
+    
+    private func loadShowtimes() {
+        // 假設您有一個獲取場次的服務
+        Task {
+            do {
+                // 這裡使用您的場次服務獲取數據
+                // showtimes = try await showtimeService.fetchShowtimes()
+                
+                // 更新 showTimeTableView
+                DispatchQueue.main.async {
+                    self.showTimeTableView.reloadData()
+                }
+            } catch {
+                print("載入場次數據失敗: \(error)")
+            }
+        }
+    }
+    
+    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+        switch segue.identifier {
+        case "toMovieSheet":
+            if let destination = segue.destination as? MovieSheetViewController {
+                // 傳遞必要的資料
+            }
+        case "toTheaterManagement":
+            if let destination = segue.destination as? TheaterManagementViewController {
+                // 傳遞必要的資料
+            }
+            // 其他Case
+        default:
+            break
+        }
+    }
+    
+    @objc func someButtonTapped() {
+        goToMovieSheet()
+    }
+    
+    
+    @objc func goToMovieSheet() {
+        do {
+            let sheetsService = GoogleSheetsService(apiEndpoint: SheetDBConfig.apiEndpoint)
+            let movieSheetViewModel = MovieSheetViewModel(sheetsService: sheetsService)
+            let movieSheetVC = MovieSheetViewController(viewModel: movieSheetViewModel)
+            
+            guard let navigationController = self.navigationController else {
+                print("❌ Navigation Controller is nil")
+                return
+            }
+            
+            navigationController.pushViewController(movieSheetVC, animated: true)
+        } catch {
+            print("❌ Error navigating to MovieSheetViewController: \(error)")
+        }
+    }
+    
+}
+
+// 實現 UITableViewDataSource
+extension MovieAdminViewController: UITableViewDataSource, UITableViewDelegate {
+    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+        return showtimes.count
+    }
+    
+    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        let cell = tableView.dequeueReusableCell(withIdentifier: "ShowTimeCell", for: indexPath)
+        let showtime = showtimes[indexPath.row]
+        
+        // 配置 cell
+        cell.textLabel?.text = "場次: \(showtime.startTime)"
+        
+        return cell
+    }
+}
+
+extension MovieAdminViewController: UICalendarSelectionSingleDateDelegate {
+    func dateSelection(_ selection: UICalendarSelectionSingleDate, didSelectDate dateComponents: DateComponents?) {
+        // 處理日期選擇事件
+        guard let selectedDate = dateComponents?.date else { return }
+        print("選擇的日期: \(selectedDate)")
+        
+        // 可以在這裡更新場次表格或執行其他邏輯
     }
 }

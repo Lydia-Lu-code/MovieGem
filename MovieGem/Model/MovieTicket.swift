@@ -19,20 +19,3 @@ struct MovieTicket: Identifiable, Equatable {
         )
     }
 }
-
-////
-////  Model.swift
-////  MovieGem
-////
-////  Created by Lydia Lu on 2025/1/9.
-////
-//
-//import Foundation
-//
-//struct MovieTicket: Identifiable, Equatable {
-//    let id: String
-//    let movieName: String
-//    let dateTime: Date
-//    let seatNumber: String
-//    let price: Double
-//}

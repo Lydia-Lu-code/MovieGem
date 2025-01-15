@@ -19,10 +19,19 @@
 		5CEDC1A12D34F8ED0072E8BF /* MovieSheetData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5CEDC1A02D34F8ED0072E8BF /* MovieSheetData.swift */; };
 		5CEDC1A32D34F9100072E8BF /* GoogleSheetsService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5CEDC1A22D34F9100072E8BF /* GoogleSheetsService.swift */; };
 		5CEDC1A52D34F9570072E8BF /* MovieSheetViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5CEDC1A42D34F9570072E8BF /* MovieSheetViewModel.swift */; };
-		5CEDC1A82D34FA050072E8BF /* SheetDBConfig.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5CEDC1A72D34FA050072E8BF /* SheetDBConfig.swift */; };
 		5CEDC1AC2D34FA6B0072E8BF /* MovieSheetViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5CEDC1AB2D34FA6B0072E8BF /* MovieSheetViewController.swift */; };
 		5CEDC1AF2D3626B40072E8BF /* MovieTicketCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5CEDC1AE2D3626B40072E8BF /* MovieTicketCell.swift */; };
-		5CEDC1B12D362D560072E8BF /* MovieAdminViewControlle.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5CEDC1B02D362D560072E8BF /* MovieAdminViewControlle.swift */; };
+		5CEDC1B12D362D560072E8BF /* MovieAdminViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5CEDC1B02D362D560072E8BF /* MovieAdminViewController.swift */; };
+		5CEDC1B32D3643D70072E8BF /* MovieAdmin.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5CEDC1B22D3643D70072E8BF /* MovieAdmin.swift */; };
+		5CEDC1B52D36440B0072E8BF /* TheaterManagementViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5CEDC1B42D36440B0072E8BF /* TheaterManagementViewController.swift */; };
+		5CEDC1B72D3644290072E8BF /* ShowtimeManagementViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5CEDC1B62D3644290072E8BF /* ShowtimeManagementViewController.swift */; };
+		5CEDC1B92D3648470072E8BF /* ShowtimeTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5CEDC1B82D3648470072E8BF /* ShowtimeTableViewCell.swift */; };
+		5CEDC1BB2D3649480072E8BF /* PriceManagementViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5CEDC1BA2D3649480072E8BF /* PriceManagementViewModel.swift */; };
+		5CEDC1BD2D3649720072E8BF /* PriceService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5CEDC1BC2D3649720072E8BF /* PriceService.swift */; };
+		5CEDC1BF2D364A5D0072E8BF /* PriceTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5CEDC1BE2D364A5D0072E8BF /* PriceTableViewCell.swift */; };
+		5CEDC1C12D364A7C0072E8BF /* DiscountTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5CEDC1C02D364A7C0072E8BF /* DiscountTableViewCell.swift */; };
+		5CEDC1C32D364ABE0072E8BF /* PriceManagementViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5CEDC1C22D364ABE0072E8BF /* PriceManagementViewController.swift */; };
+		5CEDC1C72D364E900072E8BF /* TheaterDetailViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5CEDC1C62D364E900072E8BF /* TheaterDetailViewController.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -53,10 +62,19 @@
 		5CEDC1A02D34F8ED0072E8BF /* MovieSheetData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MovieSheetData.swift; sourceTree = "<group>"; };
 		5CEDC1A22D34F9100072E8BF /* GoogleSheetsService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GoogleSheetsService.swift; sourceTree = "<group>"; };
 		5CEDC1A42D34F9570072E8BF /* MovieSheetViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MovieSheetViewModel.swift; sourceTree = "<group>"; };
-		5CEDC1A72D34FA050072E8BF /* SheetDBConfig.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SheetDBConfig.swift; sourceTree = "<group>"; };
 		5CEDC1AB2D34FA6B0072E8BF /* MovieSheetViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MovieSheetViewController.swift; sourceTree = "<group>"; };
 		5CEDC1AE2D3626B40072E8BF /* MovieTicketCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MovieTicketCell.swift; sourceTree = "<group>"; };
-		5CEDC1B02D362D560072E8BF /* MovieAdminViewControlle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MovieAdminViewControlle.swift; sourceTree = "<group>"; };
+		5CEDC1B02D362D560072E8BF /* MovieAdminViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MovieAdminViewController.swift; sourceTree = "<group>"; };
+		5CEDC1B22D3643D70072E8BF /* MovieAdmin.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MovieAdmin.swift; sourceTree = "<group>"; };
+		5CEDC1B42D36440B0072E8BF /* TheaterManagementViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TheaterManagementViewController.swift; sourceTree = "<group>"; };
+		5CEDC1B62D3644290072E8BF /* ShowtimeManagementViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShowtimeManagementViewController.swift; sourceTree = "<group>"; };
+		5CEDC1B82D3648470072E8BF /* ShowtimeTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShowtimeTableViewCell.swift; sourceTree = "<group>"; };
+		5CEDC1BA2D3649480072E8BF /* PriceManagementViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PriceManagementViewModel.swift; sourceTree = "<group>"; };
+		5CEDC1BC2D3649720072E8BF /* PriceService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PriceService.swift; sourceTree = "<group>"; };
+		5CEDC1BE2D364A5D0072E8BF /* PriceTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PriceTableViewCell.swift; sourceTree = "<group>"; };
+		5CEDC1C02D364A7C0072E8BF /* DiscountTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DiscountTableViewCell.swift; sourceTree = "<group>"; };
+		5CEDC1C22D364ABE0072E8BF /* PriceManagementViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PriceManagementViewController.swift; sourceTree = "<group>"; };
+		5CEDC1C62D364E900072E8BF /* TheaterDetailViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TheaterDetailViewController.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -82,7 +100,6 @@
 			children = (
 				5CEDC19E2D311EE90072E8BF /* MovieGem.xctestplan */,
 				5CEDC19F2D3120470072E8BF /* MovieGemTestPlan.xctestplan */,
-				5CEDC1A62D34F9EE0072E8BF /* Configuration */,
 				5CEDC16F2D2FC9C10072E8BF /* MovieGem */,
 				5CEDC1912D2FCB9F0072E8BF /* MovieGemTests */,
 				5CEDC16E2D2FC9C10072E8BF /* Products */,
@@ -128,6 +145,7 @@
 			isa = PBXGroup;
 			children = (
 				5CEDC1842D2FC9D70072E8BF /* MovieTicket.swift */,
+				5CEDC1B22D3643D70072E8BF /* MovieAdmin.swift */,
 				5CEDC1A02D34F8ED0072E8BF /* MovieSheetData.swift */,
 			);
 			path = Model;
@@ -137,6 +155,7 @@
 			isa = PBXGroup;
 			children = (
 				5CEDC1A42D34F9570072E8BF /* MovieSheetViewModel.swift */,
+				5CEDC1BA2D3649480072E8BF /* PriceManagementViewModel.swift */,
 			);
 			path = ViewModel;
 			sourceTree = "<group>";
@@ -146,16 +165,9 @@
 			children = (
 				5CEDC1862D2FC9ED0072E8BF /* MovieTicketService.swift */,
 				5CEDC1A22D34F9100072E8BF /* GoogleSheetsService.swift */,
+				5CEDC1BC2D3649720072E8BF /* PriceService.swift */,
 			);
 			path = Service;
-			sourceTree = "<group>";
-		};
-		5CEDC1A62D34F9EE0072E8BF /* Configuration */ = {
-			isa = PBXGroup;
-			children = (
-				5CEDC1A72D34FA050072E8BF /* SheetDBConfig.swift */,
-			);
-			path = Configuration;
 			sourceTree = "<group>";
 		};
 		5CEDC1AD2D36268F0072E8BF /* View */ = {
@@ -163,7 +175,14 @@
 			children = (
 				5CEDC1AE2D3626B40072E8BF /* MovieTicketCell.swift */,
 				5CEDC1AB2D34FA6B0072E8BF /* MovieSheetViewController.swift */,
-				5CEDC1B02D362D560072E8BF /* MovieAdminViewControlle.swift */,
+				5CEDC1B02D362D560072E8BF /* MovieAdminViewController.swift */,
+				5CEDC1B42D36440B0072E8BF /* TheaterManagementViewController.swift */,
+				5CEDC1B82D3648470072E8BF /* ShowtimeTableViewCell.swift */,
+				5CEDC1B62D3644290072E8BF /* ShowtimeManagementViewController.swift */,
+				5CEDC1BE2D364A5D0072E8BF /* PriceTableViewCell.swift */,
+				5CEDC1C02D364A7C0072E8BF /* DiscountTableViewCell.swift */,
+				5CEDC1C22D364ABE0072E8BF /* PriceManagementViewController.swift */,
+				5CEDC1C62D364E900072E8BF /* TheaterDetailViewController.swift */,
 			);
 			path = View;
 			sourceTree = "<group>";
@@ -270,15 +289,24 @@
 			buildActionMask = 2147483647;
 			files = (
 				5CEDC1AC2D34FA6B0072E8BF /* MovieSheetViewController.swift in Sources */,
+				5CEDC1C12D364A7C0072E8BF /* DiscountTableViewCell.swift in Sources */,
 				5CEDC1AF2D3626B40072E8BF /* MovieTicketCell.swift in Sources */,
 				5CEDC1A52D34F9570072E8BF /* MovieSheetViewModel.swift in Sources */,
 				5CEDC1712D2FC9C10072E8BF /* AppDelegate.swift in Sources */,
+				5CEDC1C32D364ABE0072E8BF /* PriceManagementViewController.swift in Sources */,
+				5CEDC1B92D3648470072E8BF /* ShowtimeTableViewCell.swift in Sources */,
+				5CEDC1BB2D3649480072E8BF /* PriceManagementViewModel.swift in Sources */,
+				5CEDC1B32D3643D70072E8BF /* MovieAdmin.swift in Sources */,
 				5CEDC1A12D34F8ED0072E8BF /* MovieSheetData.swift in Sources */,
-				5CEDC1B12D362D560072E8BF /* MovieAdminViewControlle.swift in Sources */,
+				5CEDC1C72D364E900072E8BF /* TheaterDetailViewController.swift in Sources */,
+				5CEDC1B12D362D560072E8BF /* MovieAdminViewController.swift in Sources */,
 				5CEDC1A32D34F9100072E8BF /* GoogleSheetsService.swift in Sources */,
 				5CEDC1872D2FC9ED0072E8BF /* MovieTicketService.swift in Sources */,
-				5CEDC1A82D34FA050072E8BF /* SheetDBConfig.swift in Sources */,
+				5CEDC1BF2D364A5D0072E8BF /* PriceTableViewCell.swift in Sources */,
+				5CEDC1B72D3644290072E8BF /* ShowtimeManagementViewController.swift in Sources */,
 				5CEDC1732D2FC9C10072E8BF /* SceneDelegate.swift in Sources */,
+				5CEDC1BD2D3649720072E8BF /* PriceService.swift in Sources */,
+				5CEDC1B52D36440B0072E8BF /* TheaterManagementViewController.swift in Sources */,
 				5CEDC1852D2FC9D70072E8BF /* MovieTicket.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

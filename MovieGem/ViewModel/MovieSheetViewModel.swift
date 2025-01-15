@@ -1,9 +1,13 @@
 import Foundation
+import Combine
 
 class MovieSheetViewModel: ObservableObject {
     @Published var movies: [MovieSheetData] = []
     @Published var isLoading = false
     @Published var error: Error?
+    
+    // 添加 cancellables 属性
+    var cancellables = Set<AnyCancellable>()
     
     private let sheetsService: GoogleSheetsServiceProtocol
     

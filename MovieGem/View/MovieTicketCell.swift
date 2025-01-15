@@ -73,22 +73,12 @@ class MovieTicketCell: UITableViewCell {
     }
     
     func configure(with movie: MovieSheetData) {
-        print("🟣 開始配置 Cell: \(movie.movieName)")
-        
-        // 避免重複配置，先檢查是否已經有相同的內容
-        if movieNameLabel.text == "🎬 \(movie.movieName)" {
-            print("🟣 跳過重複配置: \(movie.movieName)")
-            return
-        }
-        
         movieNameLabel.text = "🎬 \(movie.movieName)"
         dateTimeLabel.text = "📅 \(movie.showDate) \(movie.showTime)"
         seatsLabel.text = "💺 座位：\(movie.seats) (\(movie.ticketType))"
         amountLabel.text = "💰 NT$ \(movie.totalAmount)"
-        
-        print("🟣 完成配置 Cell: \(movie.movieName)")
     }
-
+    
     override func prepareForReuse() {
         super.prepareForReuse()
         print("🟣 準備重用 Cell")

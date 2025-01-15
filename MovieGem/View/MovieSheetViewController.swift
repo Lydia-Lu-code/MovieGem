@@ -37,12 +37,7 @@ class MovieSheetViewController: UIViewController {
         super.init(coder: coder)
     }
     
-//    required init?(coder: NSCoder) {
-//        let service = GoogleSheetsService(apiEndpoint: SheetDBConfig.apiEndpoint)
-//        self.viewModel = MovieSheetViewModel(sheetsService: service)
-//        super.init(coder: coder)
-//    }
-    
+
     // MARK: - Lifecycle
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -102,12 +97,15 @@ class MovieSheetViewController: UIViewController {
     }
     
     private func showError(_ error: Error) {
-        let alert = UIAlertController(title: "錯誤",
-                                    message: error.localizedDescription,
-                                    preferredStyle: .alert)
+        let alert = UIAlertController(
+            title: "錯誤",
+            message: error.localizedDescription,
+            preferredStyle: .alert
+        )
         alert.addAction(UIAlertAction(title: "確定", style: .default))
         present(alert, animated: true)
     }
+
 }
 
 // MARK: - UITableViewDataSource & Delegate
