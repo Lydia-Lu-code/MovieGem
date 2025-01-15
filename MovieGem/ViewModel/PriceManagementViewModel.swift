@@ -15,6 +15,28 @@ class PriceManagementViewModel {
     @Published var isLoading: Bool = false
     @Published var error: Error?
     
+    // 添加更多計算屬性
+    var totalDiscountValue: Double {
+        discounts.reduce(0) {
+            switch $1.type {
+            case .percentage:
+                return $0 + $1.value
+            case .fixedAmount:
+                return $0 + $1.value
+            }
+        }
+    }
+    
+    var averageBasePrice: Double {
+        guard !prices.isEmpty else { return 0 }
+        return prices.reduce(0) { $0 + $1.basePrice } / Double(prices.count)
+    }
+    
+    // 其他方法保持不變
+    func filterDiscounts(by type: PriceDiscount.DiscountType) -> [PriceDiscount] {
+        discounts.filter { $0.type == type }
+    }
+    
     // MARK: - Services
     private let priceService: PriceServiceProtocol
     

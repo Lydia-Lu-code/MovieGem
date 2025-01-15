@@ -1,20 +1,12 @@
-//
-//  MovieAdmin.swift
-//  MovieGem
-//
-//  Created by Lydia Lu on 2025/1/14.
-//
-
 import Foundation
 
-enum TheaterStatus: String, CaseIterable {   // 加入 CaseIterable 協議
+enum TheaterStatus: String, CaseIterable, Codable {
     case active = "營業中"
     case maintenance = "維護中"
     case closed = "暫停使用"
 }
 
-// MARK: - 影廳模型
-struct Theater: Codable {
+struct Theater: Codable, Identifiable {
     let id: String
     var name: String
     var capacity: Int
@@ -22,17 +14,11 @@ struct Theater: Codable {
     var status: TheaterStatus
     var seatLayout: [[SeatType]]
     
-    enum TheaterType: String, Codable, CaseIterable {  // 添加 CaseIterable
+    enum TheaterType: String, Codable, CaseIterable {
         case standard = "標準廳"
         case imax = "IMAX"
         case vip = "VIP廳"
         case fourDX = "4DX"
-    }
-    
-    enum TheaterStatus: String, Codable, CaseIterable {  // 添加 CaseIterable
-        case active = "營業中"
-        case maintenance = "維護中"
-        case closed = "暫停使用"
     }
     
     enum SeatType: String, Codable {
@@ -41,12 +27,19 @@ struct Theater: Codable {
         case handicapped = "無障礙座位"
         case empty = "空位"
     }
+    
+    // 計算可用座位數
+    var availableSeats: Int {
+        return seatLayout.flatMap { $0 }.filter { $0 == .empty }.count
+    }
+    
+    // 是否可以使用
+    var isAvailable: Bool {
+        return status == .active
+    }
 }
 
-
-
-// MARK: - 電影場次模型
-struct MovieShowtime: Codable {
+struct MovieShowtime: Codable, Identifiable {
     let id: String
     var movieId: String
     var theaterId: String
@@ -63,9 +56,25 @@ struct MovieShowtime: Codable {
         case soldOut = "已售完"
         case canceled = "已取消"
     }
+    
+    var duration: TimeInterval {
+        return endTime.timeIntervalSince(startTime)
+    }
+    
+    var isOnSale: Bool {
+        return status == .onSale
+    }
+    
+    func calculateDiscountedPrice(with discount: PriceDiscount) -> Double {
+        switch discount.type {
+        case .percentage:
+            return price.basePrice * (1 - discount.value)
+        case .fixedAmount:
+            return max(0, price.basePrice - discount.value)
+        }
+    }
 }
 
-// MARK: - 票價設定模型
 struct ShowtimePrice: Codable {
     var basePrice: Double
     var weekendPrice: Double?
@@ -78,7 +87,7 @@ struct ShowtimePrice: Codable {
     var discounts: [PriceDiscount]
 }
 
-struct PriceDiscount: Codable {
+struct PriceDiscount: Codable, Identifiable {
     let id: String
     var name: String
     var type: DiscountType
@@ -93,8 +102,7 @@ struct PriceDiscount: Codable {
     }
 }
 
-// MARK: - 訂票模型
-struct Booking: Codable {
+struct Booking: Codable, Identifiable {
     let id: String
     var showtimeId: String
     var seats: [BookingSeat]

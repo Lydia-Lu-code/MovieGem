@@ -1,5 +1,6 @@
 import UIKit
 import Combine
+import Foundation
 
 class MovieAdminViewController: UIViewController {
     
@@ -90,17 +91,54 @@ class MovieAdminViewController: UIViewController {
         return table
     }()
     
+    private lazy var ticketViewModel: MovieTicketViewModel = {
+        let service = MovieTicketService()
+        return MovieTicketViewModel(ticketService: service)
+    }()
+    
+    func loadTicketData() {
+        Task {
+            await ticketViewModel.fetchTickets()
+        }
+    }
+    
     // MARK: - Lifecycle
     override func viewDidLoad() {
         super.viewDidLoad()
         setupUI()
         setupConstraints()
         setupInitialData()
+        setupTheaterTableView()
         
         // 設置 table view
         showTimeTableView.dataSource = self
         showTimeTableView.delegate = self
     }
+    
+    private func addNewTheater(name: String, capacity: Int, type: Theater.TheaterType) {
+        let newTheater = Theater(
+            id: UUID().uuidString,
+            name: name,
+            capacity: capacity,
+            type: type,
+            status: .active,
+            seatLayout: Array(repeating: Array(repeating: .normal, count: Int(sqrt(Double(capacity)))),
+                            count: Int(sqrt(Double(capacity))))
+        )
+        
+        theaters.append(newTheater)
+        theaterTableView.reloadData()
+    }
+
+    // 同時確保 theaters 屬性也在類別内部定義
+    private var theaters: [Theater] = [
+        Theater(id: "1", name: "第一影廳", capacity: 120, type: .standard,
+               status: .active, seatLayout: Array(repeating: Array(repeating: .normal, count: 12), count: 10)),
+        Theater(id: "2", name: "IMAX影廳", capacity: 180, type: .imax,
+               status: .active, seatLayout: Array(repeating: Array(repeating: .normal, count: 15), count: 12)),
+        Theater(id: "3", name: "VIP影廳", capacity: 60, type: .vip,
+               status: .maintenance, seatLayout: Array(repeating: Array(repeating: .vip, count: 8), count: 8))
+    ]
     
     // MARK: - UI Setup
     private func setupUI() {
@@ -193,7 +231,6 @@ class MovieAdminViewController: UIViewController {
         case 0: // 影廳管理
             theaterManagementView.isHidden = false
             showTimeManagementView.isHidden = true
-            goToTheaterManagement()
         case 1: // 場次管理
             theaterManagementView.isHidden = true
             showTimeManagementView.isHidden = false
@@ -207,11 +244,6 @@ class MovieAdminViewController: UIViewController {
         }
     }
     
-    // 添加新的導航方法
-    @objc func goToTheaterManagement() {
-        let theaterManagementVC = TheaterManagementViewController()
-        navigationController?.pushViewController(theaterManagementVC, animated: true)
-    }
     
     @objc func goToShowtimeManagement() {
         let showtimeManagementVC = ShowtimeManagementViewController()
@@ -248,26 +280,36 @@ class MovieAdminViewController: UIViewController {
         navigationController?.pushViewController(theaterDetailVC, animated: true)
     }
     
-
-    
     @objc private func addTheaterTapped() {
-        let alert = UIAlertController(title: "新增影廳",
-                                      message: "請輸入影廳資訊",
-                                      preferredStyle: .alert)
+        let alert = UIAlertController(title: "新增影廳", message: nil, preferredStyle: .alert)
         
         alert.addTextField { textField in
             textField.placeholder = "影廳名稱"
         }
         
         alert.addTextField { textField in
-            textField.placeholder = "座位數量"
+            textField.placeholder = "座位容量"
             textField.keyboardType = .numberPad
         }
         
-        alert.addAction(UIAlertAction(title: "取消", style: .cancel))
-        alert.addAction(UIAlertAction(title: "確定", style: .default) { [weak self] _ in
-            // TODO: 處理新增影廳邏輯
+        let pickerVC = UIAlertController(title: "選擇影廳類型", message: nil, preferredStyle: .actionSheet)
+        Theater.TheaterType.allCases.forEach { type in
+            let action = UIAlertAction(title: type.rawValue, style: .default) { [weak self] _ in
+                guard let name = alert.textFields?[0].text,
+                      let capacityText = alert.textFields?[1].text,
+                      let capacity = Int(capacityText) else { return }
+                
+                self?.addNewTheater(name: name, capacity: capacity, type: type)
+            }
+            pickerVC.addAction(action)
+        }
+        
+        pickerVC.addAction(UIAlertAction(title: "取消", style: .cancel))
+        
+        alert.addAction(UIAlertAction(title: "下一步", style: .default) { [weak self] _ in
+            self?.present(pickerVC, animated: true)
         })
+        alert.addAction(UIAlertAction(title: "取消", style: .cancel))
         
         present(alert, animated: true)
     }
@@ -315,10 +357,7 @@ class MovieAdminViewController: UIViewController {
                 // 傳遞必要的資料
             }
         case "toTheaterManagement":
-            if let destination = segue.destination as? TheaterManagementViewController {
-                // 傳遞必要的資料
-            }
-            // 其他Case
+            print("\(11111)")
         default:
             break
         }
@@ -349,19 +388,74 @@ class MovieAdminViewController: UIViewController {
 }
 
 // 實現 UITableViewDataSource
+// 在 UITableViewDataSource 和 UITableViewDelegate 擴展中新增
 extension MovieAdminViewController: UITableViewDataSource, UITableViewDelegate {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+        if tableView == theaterTableView {
+            return theaters.count
+        }
         return showtimes.count
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        if tableView == theaterTableView {
+            let cell = tableView.dequeueReusableCell(withIdentifier: "TheaterCell", for: indexPath)
+            let theater = theaters[indexPath.row]
+            
+            var config = cell.defaultContentConfiguration()
+            config.text = "\(theater.name) (\(theater.type.rawValue))"
+            config.secondaryText = "座位數: \(theater.capacity) | 狀態: \(theater.status.rawValue)"
+            cell.contentConfiguration = config
+            
+            return cell
+        }
+        
         let cell = tableView.dequeueReusableCell(withIdentifier: "ShowTimeCell", for: indexPath)
         let showtime = showtimes[indexPath.row]
-        
-        // 配置 cell
         cell.textLabel?.text = "場次: \(showtime.startTime)"
         
         return cell
+    }
+    
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        if tableView == theaterTableView {
+            tableView.deselectRow(at: indexPath, animated: true)
+            let theater = theaters[indexPath.row]
+        }
+    }
+    
+    func tableView(_ tableView: UITableView, trailingSwipeActionsConfigurationForRowAt indexPath: IndexPath) -> UISwipeActionsConfiguration? {
+        guard tableView == theaterTableView else { return nil }
+        
+        let theater = theaters[indexPath.row]
+        
+        let delete = UIContextualAction(style: .destructive, title: "刪除") { [weak self] _, _, completion in
+            self?.theaters.remove(at: indexPath.row)
+            tableView.deleteRows(at: [indexPath], with: .automatic)
+            completion(true)
+        }
+        
+        let status = UIContextualAction(style: .normal, title: "狀態") { [weak self] _, _, completion in
+            let alert = UIAlertController(title: "更改狀態", message: nil, preferredStyle: .actionSheet)
+            
+            TheaterStatus.allCases.forEach { status in
+                let action = UIAlertAction(title: status.rawValue, style: .default) { _ in
+                    var updatedTheater = theater
+                    updatedTheater.status = status
+                    self?.theaters[indexPath.row] = updatedTheater
+                    tableView.reloadRows(at: [indexPath], with: .automatic)
+                }
+                alert.addAction(action)
+            }
+            
+            alert.addAction(UIAlertAction(title: "取消", style: .cancel))
+            self?.present(alert, animated: true)
+            completion(true)
+        }
+        
+        status.backgroundColor = UIColor.systemBlue
+        
+        return UISwipeActionsConfiguration(actions: [delete, status])
     }
 }
 
@@ -374,3 +468,14 @@ extension MovieAdminViewController: UICalendarSelectionSingleDateDelegate {
         // 可以在這裡更新場次表格或執行其他邏輯
     }
 }
+
+extension MovieAdminViewController {
+    // 設置影廳 TableView
+    func setupTheaterTableView() {
+        theaterTableView.delegate = self
+        theaterTableView.dataSource = self
+        theaterTableView.register(UITableViewCell.self, forCellReuseIdentifier: "TheaterCell")
+    }
+}
+
+

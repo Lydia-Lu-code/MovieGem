@@ -1,13 +1,7 @@
-//
-//  MovieSheetData.swift
-//  MovieGem
-//
-//  Created by Lydia Lu on 2025/1/13.
-//
-
 import Foundation
 
-struct MovieSheetData: Codable {
+struct MovieSheetData: Codable, Identifiable {
+    let id: String = UUID().uuidString
     let bookingDate: String
     let movieName: String
     let showDate: String
@@ -27,10 +21,7 @@ struct MovieSheetData: Codable {
         case seats = "座位"
         case totalAmount = "總金額"
     }
-}
-
-// MARK: - 擴展功能
-extension MovieSheetData {
+    
     var date: Date? {
         let dateFormatter = DateFormatter()
         dateFormatter.dateFormat = "yyyy/MM/dd"
@@ -48,5 +39,12 @@ extension MovieSheetData {
     var formattedAmount: String {
         return "NT$ \(totalAmount)"
     }
+    
+    var isWeekend: Bool {
+        guard let date = date else { return false }
+        let calendar = Calendar.current
+        return calendar.isDateInWeekend(date)
+    }
 }
+
 

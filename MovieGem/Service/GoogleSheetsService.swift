@@ -31,30 +31,46 @@ class GoogleSheetsService: GoogleSheetsServiceProtocol {
     }
     
     func fetchData() async throws -> [MovieSheetData] {
+        var retryCount = 0
+        
+        while retryCount < SheetDBConfig.maxRetries {
+            do {
+                // 現有的實現
+                return try await performFetch()
+            } catch {
+                retryCount += 1
+                if retryCount >= SheetDBConfig.maxRetries {
+                    throw error
+                }
+                // 等待一段時間後重試
+                try await Task.sleep(nanoseconds: 1_000_000_000)
+            }
+        }
+        
+        throw URLError(.unknown)
+    }
+
+    private func performFetch() async throws -> [MovieSheetData] {
         guard let url = URL(string: apiEndpoint) else {
             print("❌ URL 錯誤：\(apiEndpoint)")
             throw URLError(.badURL)
         }
         
-        do {
-            let (data, response) = try await URLSession.shared.data(from: url)
-            
-            // 詳細日誌
-            print("🌐 API 端點: \(apiEndpoint)")
-            print("🔍 回應數據: \(String(data: data, encoding: .utf8) ?? "無法解析")")
-            
-            guard let httpResponse = response as? HTTPURLResponse,
-                  httpResponse.statusCode == 200 else {
-                print("❌ HTTP 響應錯誤")
-                throw URLError(.badServerResponse)
-            }
-            
-            return try parseSheetData(data)
-        } catch {
-            print("❌ 網路請求錯誤: \(error)")
-            throw error
+        let (data, response) = try await URLSession.shared.data(from: url)
+        
+        // 詳細日誌
+        print("🌐 API 端點: \(apiEndpoint)")
+        print("🔍 回應數據: \(String(data: data, encoding: .utf8) ?? "無法解析")")
+        
+        guard let httpResponse = response as? HTTPURLResponse,
+              httpResponse.statusCode == 200 else {
+            print("❌ HTTP 響應錯誤")
+            throw URLError(.badServerResponse)
         }
+        
+        return try parseSheetData(data)
     }
+    
     
     private func parseSheetData(_ data: Data) throws -> [MovieSheetData] {
         let decoder = JSONDecoder()

@@ -97,9 +97,13 @@ final class MovieTicketViewModelTests: XCTestCase {
 
 // MARK: - Mock Service
 class MockMovieTicketService: MovieTicketServiceProtocol {
+    
     var mockTickets: [MovieTicket] = []
     var mockError: Error?
     var fetchTicketsCalled = false
+    var bookTicketCalled = false
+    var shouldBookTicketSucceed = true
+    var bookTicketError: Error?
     
     func fetchTickets() async throws -> [MovieTicket] {
         fetchTicketsCalled = true
@@ -109,6 +113,17 @@ class MockMovieTicketService: MovieTicketServiceProtocol {
         }
         return mockTickets
     }
+    
+    func bookTicket(_ ticket: MovieTicket) async throws -> Bool {
+        bookTicketCalled = true
+        
+        if let error = bookTicketError {
+            throw error
+        }
+        
+        return shouldBookTicketSucceed
+    }
+    
 }
 
 // MARK: - Test Extensions
@@ -120,40 +135,3 @@ extension MovieTicket {
         abs(lhs.price - rhs.price) < 0.001
     }
 }
-
-////
-////  MovieTicketViewModelTests.swift
-////  MovieGemTests
-////
-////  Created by Lydia Lu on 2025/1/9.
-////
-//
-//import XCTest
-//@testable import MovieGem
-//
-//final class MovieTicketViewModelTests: XCTestCase {
-//
-//    override func setUpWithError() throws {
-//        // Put setup code here. This method is called before the invocation of each test method in the class.
-//    }
-//
-//    override func tearDownWithError() throws {
-//        // Put teardown code here. This method is called after the invocation of each test method in the class.
-//    }
-//
-//    func testExample() throws {
-//        // This is an example of a functional test case.
-//        // Use XCTAssert and related functions to verify your tests produce the correct results.
-//        // Any test you write for XCTest can be annotated as throws and async.
-//        // Mark your test throws to produce an unexpected failure when your test encounters an uncaught error.
-//        // Mark your test async to allow awaiting for asynchronous code to complete. Check the results with assertions afterwards.
-//    }
-//
-//    func testPerformanceExample() throws {
-//        // This is an example of a performance test case.
-//        self.measure {
-//            // Put the code you want to measure the time of here.
-//        }
-//    }
-//
-//}

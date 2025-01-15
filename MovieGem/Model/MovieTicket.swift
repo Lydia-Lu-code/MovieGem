@@ -1,14 +1,20 @@
-// Model/MovieTicket.swift
 import Foundation
 
-struct MovieTicket: Identifiable, Equatable {
+struct MovieTicket: Identifiable, Equatable, Codable {
     let id: String
     let movieName: String
     let dateTime: Date
     let seatNumber: String
     let price: Double
     
-    // 方便測試用的初始化方法
+    var formattedPrice: String {
+        return String(format: "NT$ %.0f", price)
+    }
+    
+    var isExpired: Bool {
+        return dateTime < Date()
+    }
+    
     static func sample() -> MovieTicket {
         MovieTicket(
             id: UUID().uuidString,
