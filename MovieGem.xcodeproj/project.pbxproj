@@ -33,6 +33,9 @@
 		5CEDC1C72D364E900072E8BF /* TheaterDetailViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5CEDC1C62D364E900072E8BF /* TheaterDetailViewController.swift */; };
 		5CEDC1C92D376F1E0072E8BF /* MovieTicketViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5CEDC1C82D376F1E0072E8BF /* MovieTicketViewModel.swift */; };
 		5CEDC1CD2D377D4D0072E8BF /* TheaterDetailViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5CEDC1CC2D377D4D0072E8BF /* TheaterDetailViewModel.swift */; };
+		5CEDC1D12D38CB490072E8BF /* TheaterManagementViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5CEDC1D02D38CB490072E8BF /* TheaterManagementViewModel.swift */; };
+		5CEDC1D32D38CB650072E8BF /* ShowtimeManagementViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5CEDC1D22D38CB650072E8BF /* ShowtimeManagementViewModel.swift */; };
+		5CEDC1D52D38CB800072E8BF /* TheaterManagementViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5CEDC1D42D38CB800072E8BF /* TheaterManagementViewController.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -77,6 +80,9 @@
 		5CEDC1C62D364E900072E8BF /* TheaterDetailViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TheaterDetailViewController.swift; sourceTree = "<group>"; };
 		5CEDC1C82D376F1E0072E8BF /* MovieTicketViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MovieTicketViewModel.swift; sourceTree = "<group>"; };
 		5CEDC1CC2D377D4D0072E8BF /* TheaterDetailViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TheaterDetailViewModel.swift; sourceTree = "<group>"; };
+		5CEDC1D02D38CB490072E8BF /* TheaterManagementViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TheaterManagementViewModel.swift; sourceTree = "<group>"; };
+		5CEDC1D22D38CB650072E8BF /* ShowtimeManagementViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShowtimeManagementViewModel.swift; sourceTree = "<group>"; };
+		5CEDC1D42D38CB800072E8BF /* TheaterManagementViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TheaterManagementViewController.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -160,6 +166,8 @@
 				5CEDC1A42D34F9570072E8BF /* MovieSheetViewModel.swift */,
 				5CEDC1BA2D3649480072E8BF /* PriceManagementViewModel.swift */,
 				5CEDC1CC2D377D4D0072E8BF /* TheaterDetailViewModel.swift */,
+				5CEDC1D02D38CB490072E8BF /* TheaterManagementViewModel.swift */,
+				5CEDC1D22D38CB650072E8BF /* ShowtimeManagementViewModel.swift */,
 			);
 			path = ViewModel;
 			sourceTree = "<group>";
@@ -186,6 +194,7 @@
 				5CEDC1B62D3644290072E8BF /* ShowtimeManagementViewController.swift */,
 				5CEDC1C22D364ABE0072E8BF /* PriceManagementViewController.swift */,
 				5CEDC1C62D364E900072E8BF /* TheaterDetailViewController.swift */,
+				5CEDC1D42D38CB800072E8BF /* TheaterManagementViewController.swift */,
 			);
 			path = View;
 			sourceTree = "<group>";
@@ -300,6 +309,7 @@
 				5CEDC1B92D3648470072E8BF /* ShowtimeTableViewCell.swift in Sources */,
 				5CEDC1BB2D3649480072E8BF /* PriceManagementViewModel.swift in Sources */,
 				5CEDC1B32D3643D70072E8BF /* MovieModels.swift in Sources */,
+				5CEDC1D52D38CB800072E8BF /* TheaterManagementViewController.swift in Sources */,
 				5CEDC1A12D34F8ED0072E8BF /* MovieSheetData.swift in Sources */,
 				5CEDC1C72D364E900072E8BF /* TheaterDetailViewController.swift in Sources */,
 				5CEDC1B12D362D560072E8BF /* MovieAdminViewController.swift in Sources */,
@@ -307,9 +317,11 @@
 				5CEDC1CD2D377D4D0072E8BF /* TheaterDetailViewModel.swift in Sources */,
 				5CEDC1C92D376F1E0072E8BF /* MovieTicketViewModel.swift in Sources */,
 				5CEDC1872D2FC9ED0072E8BF /* MovieTicketService.swift in Sources */,
+				5CEDC1D12D38CB490072E8BF /* TheaterManagementViewModel.swift in Sources */,
 				5CEDC1BF2D364A5D0072E8BF /* PriceTableViewCell.swift in Sources */,
 				5CEDC1B72D3644290072E8BF /* ShowtimeManagementViewController.swift in Sources */,
 				5CEDC1732D2FC9C10072E8BF /* SceneDelegate.swift in Sources */,
+				5CEDC1D32D38CB650072E8BF /* ShowtimeManagementViewModel.swift in Sources */,
 				5CEDC1BD2D3649720072E8BF /* PriceService.swift in Sources */,
 				5CEDC1852D2FC9D70072E8BF /* MovieTicket.swift in Sources */,
 			);

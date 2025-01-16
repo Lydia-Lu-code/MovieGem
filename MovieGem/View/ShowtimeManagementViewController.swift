@@ -13,17 +13,54 @@ class ShowtimeManagementViewController: UIViewController {
     private var filteredShowtimes: [MovieShowtime] = []
     private var selectedDate: Date = Date()
     private var theaters: [Theater] = []
+    private let viewModel: ShowtimeManagementViewModel
+    
+    // 添加帶有 ViewModel 的初始化方法
+    init(viewModel: ShowtimeManagementViewModel) {
+        self.viewModel = viewModel
+        super.init(nibName: nil, bundle: nil)
+    }
+    
+    // 必須實現的初始化方法
+    required init?(coder: NSCoder) {
+        // 如果在 Storyboard 中使用，提供一個預設的 ViewModel
+        self.viewModel = ShowtimeManagementViewModel()
+        super.init(coder: coder)
+    }
     
     // MARK: - UI Components
+    private lazy var scrollView: UIScrollView = {
+        let scrollView = UIScrollView()
+        scrollView.translatesAutoresizingMaskIntoConstraints = false
+        return scrollView
+    }()
+    
+    private lazy var contentView: UIView = {
+        let view = UIView()
+        view.translatesAutoresizingMaskIntoConstraints = false
+        return view
+    }()
+    
     private lazy var calendarView: UICalendarView = {
         let calendar = UICalendarView()
         calendar.calendar = .current
         calendar.locale = .current
         calendar.delegate = self
         calendar.translatesAutoresizingMaskIntoConstraints = false
+        calendar.fontDesign = .rounded
+        
+        // 設置日曆的外觀
+        calendar.backgroundColor = .systemBackground
+        calendar.layer.cornerRadius = 12
+        calendar.layer.masksToBounds = true
         
         let dateSelection = UICalendarSelectionSingleDate(delegate: self)
         calendar.selectionBehavior = dateSelection
+        
+        // 移除固定高度限制，讓它自動適應內容
+        calendar.setContentHuggingPriority(.required, for: .vertical)
+        calendar.setContentCompressionResistancePriority(.required, for: .vertical)
+        
         return calendar
     }()
     
@@ -47,16 +84,6 @@ class ShowtimeManagementViewController: UIViewController {
         return table
     }()
     
-    private lazy var addButton: UIButton = {
-        let button = UIButton(type: .system)
-        button.setTitle("新增場次", for: .normal)
-        button.backgroundColor = .systemBlue
-        button.setTitleColor(.white, for: .normal)
-        button.layer.cornerRadius = 8
-        button.translatesAutoresizingMaskIntoConstraints = false
-        button.addTarget(self, action: #selector(addShowtimeTapped), for: .touchUpInside)
-        return button
-    }()
     
     // MARK: - Lifecycle
     override func viewDidLoad() {
@@ -66,6 +93,9 @@ class ShowtimeManagementViewController: UIViewController {
         
         view.backgroundColor = .white
         title = "場次管理"
+        
+        // 使用 viewModel 的方法
+        viewModel.loadData()
     }
     
     // MARK: - UI Setup
@@ -73,7 +103,6 @@ class ShowtimeManagementViewController: UIViewController {
         view.backgroundColor = .systemBackground
         title = "場次管理"
         
-        // Add refresh button to navigation bar
         navigationItem.rightBarButtonItem = UIBarButtonItem(
             image: UIImage(systemName: "arrow.clockwise"),
             style: .plain,
@@ -81,33 +110,68 @@ class ShowtimeManagementViewController: UIViewController {
             action: #selector(refreshData)
         )
         
-        view.addSubview(calendarView)
-        view.addSubview(segmentedControl)
-        view.addSubview(tableView)
-        view.addSubview(addButton)
+        view.addSubview(scrollView)
+        scrollView.addSubview(contentView)
+        
+        contentView.addSubview(calendarView)
+        contentView.addSubview(segmentedControl)
+        contentView.addSubview(tableView)
         
         NSLayoutConstraint.activate([
-            calendarView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 16),
-            calendarView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
-            calendarView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16),
-            calendarView.heightAnchor.constraint(equalToConstant: 300),
+            // ScrollView
+            scrollView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
+            scrollView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+            scrollView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+            scrollView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor),
             
-            segmentedControl.topAnchor.constraint(equalTo: calendarView.bottomAnchor, constant: 16),
-            segmentedControl.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
-            segmentedControl.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16),
+            // ContentView
+            contentView.topAnchor.constraint(equalTo: scrollView.contentLayoutGuide.topAnchor),
+            contentView.leadingAnchor.constraint(equalTo: scrollView.contentLayoutGuide.leadingAnchor),
+            contentView.trailingAnchor.constraint(equalTo: scrollView.contentLayoutGuide.trailingAnchor),
+            contentView.bottomAnchor.constraint(equalTo: scrollView.contentLayoutGuide.bottomAnchor),
+            // 確保 contentView 的寬度等於 scrollView 的框架寬度
+            contentView.widthAnchor.constraint(equalTo: scrollView.frameLayoutGuide.widthAnchor),
             
-            tableView.topAnchor.constraint(equalTo: segmentedControl.bottomAnchor, constant: 16),
-            tableView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
-            tableView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
-            tableView.bottomAnchor.constraint(equalTo: addButton.topAnchor, constant: -16),
+            // Calendar
+            calendarView.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 8),
+            calendarView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 8),
+            calendarView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -8),
             
-            addButton.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
-            addButton.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16),
-            addButton.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -16),
-            addButton.heightAnchor.constraint(equalToConstant: 44)
+            // SegmentedControl
+            segmentedControl.topAnchor.constraint(equalTo: calendarView.bottomAnchor, constant: 8),
+            segmentedControl.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 8),
+            segmentedControl.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -8),
+            
+            // TableView - 移除固定高度約束
+            tableView.topAnchor.constraint(equalTo: segmentedControl.bottomAnchor, constant: 8),
+            tableView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor),
+            tableView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor),
+            tableView.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -8)
         ])
+        
+        // 確保 ScrollView 可以垂直滾動
+        scrollView.alwaysBounceVertical = true
     }
-    
+
+    override func viewDidLayoutSubviews() {
+        super.viewDidLayoutSubviews()
+        
+        // 計算並更新 contentView 的最小高度
+        let totalHeight = calendarView.frame.height +
+            segmentedControl.frame.height +
+            tableView.contentSize.height + 32  // 加上間距
+        
+        // 確保 contentView 的高度至少等於 scrollView 的高度
+        let minHeight = max(totalHeight, scrollView.frame.height)
+        
+        // 更新 contentView 的高度約束
+        if let existingConstraint = contentView.constraints.first(where: { $0.firstAttribute == .height }) {
+            existingConstraint.constant = minHeight
+        } else {
+            contentView.heightAnchor.constraint(equalToConstant: minHeight).isActive = true
+        }
+    }
+
     // MARK: - Data Loading
     private func loadInitialData() {
         // 載入影廳資料
