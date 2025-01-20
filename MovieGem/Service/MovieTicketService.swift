@@ -34,10 +34,8 @@ class MovieTicketService: MovieTicketServiceProtocol {
         let randomSuccess = Bool.random()
         
         if randomSuccess {
-            print("🎫 成功預訂電影票：\(ticket.movieName) - 座位 \(ticket.seatNumber)")
             return true
         } else {
-            print("❌ 預訂失敗：\(ticket.movieName)")
             throw BookingError.unavailableSeat
         }
     }

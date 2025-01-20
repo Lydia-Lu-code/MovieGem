@@ -51,7 +51,6 @@ class MovieSheetViewController: UIViewController {
     // MARK: - Lifecycle
     override func viewDidLoad() {
         super.viewDidLoad()
-        print("🔵 MovieSheetViewController - viewDidLoad")
         setupUI()
         setupBindings()
         setupNotifications()
@@ -166,7 +165,6 @@ extension MovieSheetViewController: UITableViewDataSource, UITableViewDelegate {
     
 
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        print("Number of movies: \(viewModel.movies.count)")
         return viewModel.movies.count
     }
     

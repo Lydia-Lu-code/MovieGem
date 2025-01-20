@@ -81,7 +81,6 @@ class MovieTicketCell: UITableViewCell {
     
     override func prepareForReuse() {
         super.prepareForReuse()
-        print("🟣 準備重用 Cell")
         movieNameLabel.text = nil
         dateTimeLabel.text = nil
         seatsLabel.text = nil

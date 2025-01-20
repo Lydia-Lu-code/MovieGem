@@ -33,17 +33,6 @@ class PriceManagementViewController: UIViewController {
         return table
     }()
     
-    private lazy var addButton: UIButton = {
-        let button = UIButton(type: .system)
-        button.setTitle("新增", for: .normal)
-        button.backgroundColor = .systemBlue
-        button.setTitleColor(.white, for: .normal)
-        button.layer.cornerRadius = 8
-        button.translatesAutoresizingMaskIntoConstraints = false
-        button.addTarget(self, action: #selector(addTapped), for: .touchUpInside)
-        return button
-    }()
-    
     private lazy var loadingIndicator: UIActivityIndicatorView = {
         let indicator = UIActivityIndicatorView(style: .large)
         indicator.hidesWhenStopped = true
@@ -87,7 +76,7 @@ class PriceManagementViewController: UIViewController {
         
         view.addSubview(segmentedControl)
         view.addSubview(tableView)
-        view.addSubview(addButton)
+//        view.addSubview(addButton)
         view.addSubview(loadingIndicator)
         
         NSLayoutConstraint.activate([
@@ -98,12 +87,6 @@ class PriceManagementViewController: UIViewController {
             tableView.topAnchor.constraint(equalTo: segmentedControl.bottomAnchor, constant: 16),
             tableView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
             tableView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
-            tableView.bottomAnchor.constraint(equalTo: addButton.topAnchor, constant: -16),
-            
-            addButton.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
-            addButton.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16),
-            addButton.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -16),
-            addButton.heightAnchor.constraint(equalToConstant: 44),
             
             loadingIndicator.centerXAnchor.constraint(equalTo: view.centerXAnchor),
             loadingIndicator.centerYAnchor.constraint(equalTo: view.centerYAnchor)
@@ -113,20 +96,15 @@ class PriceManagementViewController: UIViewController {
     // MARK: - Bindings
     private func setupBindings() {
         // 監聽載入狀態
-        viewModel.$isLoading
+        // 監聽分段控制
+        viewModel.$selectedSegmentIndex
             .receive(on: DispatchQueue.main)
-            .sink { [weak self] isLoading in
-                if isLoading {
-                    self?.loadingIndicator.startAnimating()
-                    self?.tableView.alpha = 0.5
-                    self?.tableView.isUserInteractionEnabled = false
-                } else {
-                    self?.loadingIndicator.stopAnimating()
-                    self?.tableView.alpha = 1
-                    self?.tableView.isUserInteractionEnabled = true
-                }
+            .sink { [weak self] index in
+                self?.segmentedControl.selectedSegmentIndex = index
+                self?.tableView.reloadData()
             }
             .store(in: &cancellables)
+        
         
         // 監聽錯誤
         viewModel.$error
@@ -150,7 +128,6 @@ class PriceManagementViewController: UIViewController {
             .receive(on: DispatchQueue.main)
             .sink { [weak self] index in
                 self?.segmentedControl.selectedSegmentIndex = index
-                self?.addButton.setTitle(index == 0 ? "新增票價" : "新增折扣", for: .normal)
                 self?.tableView.reloadData()
             }
             .store(in: &cancellables)

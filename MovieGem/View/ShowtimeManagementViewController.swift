@@ -90,9 +90,7 @@ class ShowtimeManagementViewController: UIViewController {
         // 確保每次只觸發一次更新
         viewModel.$filteredShowtimes
             .receive(on: DispatchQueue.main)
-//            .removeDuplicates()  // 移除重複的值
             .sink { [weak self] filteredShowtimes in
-                print("📊 更新 TableView，場次數量: \(filteredShowtimes.count)")
                 self?.tableView.reloadData()
             }
             .store(in: &cancellables)
@@ -271,12 +269,10 @@ class ShowtimeManagementViewController: UIViewController {
 extension ShowtimeManagementViewController: UITableViewDataSource, UITableViewDelegate {
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        print("📊 TableView 請求行數: \(viewModel.filteredShowtimes.count)")
         return viewModel.filteredShowtimes.count
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        print("🔄 配置 cell，行號: \(indexPath.row)")
         guard let cell = tableView.dequeueReusableCell(withIdentifier: "ShowtimeCell", for: indexPath) as? ShowtimeTableViewCell else {
             return UITableViewCell()
         }
@@ -298,11 +294,9 @@ extension ShowtimeManagementViewController: UICalendarViewDelegate, UICalendarSe
     
     func dateSelection(_ selection: UICalendarSelectionSingleDate, didSelectDate dateComponents: DateComponents?) {
         guard let date = Calendar.current.date(from: dateComponents ?? DateComponents()) else {
-            print("❌ 日期轉換失敗")
             return
         }
         
-        print("📅 選擇的日期: \(date)")
         
         // 重置狀態過濾
         viewModel.selectedStatus = nil  // 修改這裡

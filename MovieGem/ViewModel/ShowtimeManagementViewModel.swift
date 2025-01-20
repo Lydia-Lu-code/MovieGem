@@ -58,7 +58,6 @@ class ShowtimeManagementViewModel: ObservableObject {
                 case .success(let records):
                     continuation.resume(returning: records)
                 case .failure(let error):
-                    print("❌ 載入記錄失敗: \(error)")
                     continuation.resume(throwing: error)
                 }
             }
@@ -202,18 +201,13 @@ class ShowtimeManagementViewModel: ObservableObject {
                 let records = try await loadRecords(for: dateString)
                 
                 if records.isEmpty {
-                    print("⚠️ 沒有找到該日期的記錄")
                     self.showtimes = []
                     self.filteredShowtimes = []
                 } else {
                     self.showtimes = records.map(convertToShowtime)
                     self.filterShowtimes(date: date, status: self.selectedStatus)
                 }
-                
-                print("🔍 載入記錄數量: \(self.showtimes.count)")
-                print("🔍 過濾後場次數: \(self.filteredShowtimes.count)")
             } catch {
-                print("❌ 載入失敗: \(error)")
                 self.showtimes = []
                 self.filteredShowtimes = []
                 
@@ -234,10 +228,6 @@ class ShowtimeManagementViewModel: ObservableObject {
             let statusMatch = status == nil || showtime.status == status
             return isWithinDay && statusMatch
         }
-        
-        print("🔍 過濾日期: \(formatDate(startOfDay))")
-        print("🏷 過濾狀態: \(String(describing: status))")
-        print("✅ 過濾完成，結果數量: \(filteredShowtimes.count)")
     }
     
 }

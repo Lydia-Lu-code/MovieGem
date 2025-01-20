@@ -112,8 +112,6 @@ class GoogleSheetsService: GoogleSheetsServiceProtocol {
             return
         }
         
-        print("🔗 完整 URL: \(url.absoluteString)")
-        
         var request = URLRequest(url: url)
         request.setValue("application/json", forHTTPHeaderField: "Accept")
         
@@ -122,35 +120,27 @@ class GoogleSheetsService: GoogleSheetsServiceProtocol {
             
             // 詳細的錯誤處理
             if let error = error {
-                print("❌ 網路錯誤: \(error.localizedDescription)")
                 completion(.failure(error))
                 return
             }
             
             guard let httpResponse = response as? HTTPURLResponse else {
-                print("❌ 無效的伺服器響應")
                 completion(.failure(URLError(.badServerResponse)))
                 return
             }
             
-            print("📥 HTTP 狀態碼: \(httpResponse.statusCode)")
-            print("🔑 響應頭: \(httpResponse.allHeaderFields)")
-            
             guard (200...299).contains(httpResponse.statusCode) else {
-                print("❌ 伺服器錯誤: 狀態碼 \(httpResponse.statusCode)")
                 completion(.failure(URLError(.badServerResponse)))
                 return
             }
             
             guard let data = data, !data.isEmpty else {
-                print("⚠️ 無數據返回")
                 completion(.success([]))
                 return
             }
             
             do {
                 let jsonString = String(data: data, encoding: .utf8) ?? "無法解碼"
-                print("📄 原始數據: \(jsonString)")
                 
                 let decoder = JSONDecoder()
                 let dateFormatter = DateFormatter()
@@ -159,17 +149,14 @@ class GoogleSheetsService: GoogleSheetsServiceProtocol {
                 
                 let records = try decoder.decode([BookingRecord].self, from: data)
                 
-                print("✅ 解析成功，記錄數量: \(records.count)")
                 completion(.success(records))
                 
             } catch {
-                print("❌ 解析錯誤: \(error)")
                 completion(.failure(error))
             }
         }
         
         task.resume()
-        print("🚀 API 請求已發送")
     }
 
     // 輔助方法：解析記錄的替代方案
