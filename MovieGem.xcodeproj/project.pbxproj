@@ -14,8 +14,6 @@
 		5CEDC17D2D2FC9C20072E8BF /* Base in Resources */ = {isa = PBXBuildFile; fileRef = 5CEDC17C2D2FC9C20072E8BF /* Base */; };
 		5CEDC1852D2FC9D70072E8BF /* MovieTicket.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5CEDC1842D2FC9D70072E8BF /* MovieTicket.swift */; };
 		5CEDC1872D2FC9ED0072E8BF /* MovieTicketService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5CEDC1862D2FC9ED0072E8BF /* MovieTicketService.swift */; };
-		5CEDC1932D2FCB9F0072E8BF /* MovieGemTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5CEDC1922D2FCB9F0072E8BF /* MovieGemTests.swift */; };
-		5CEDC19A2D2FCBEC0072E8BF /* MovieTicketViewModelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5CEDC1992D2FCBEC0072E8BF /* MovieTicketViewModelTests.swift */; };
 		5CEDC1A12D34F8ED0072E8BF /* MovieSheetData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5CEDC1A02D34F8ED0072E8BF /* MovieSheetData.swift */; };
 		5CEDC1A32D34F9100072E8BF /* GoogleSheetsService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5CEDC1A22D34F9100072E8BF /* GoogleSheetsService.swift */; };
 		5CEDC1A52D34F9570072E8BF /* MovieSheetViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5CEDC1A42D34F9570072E8BF /* MovieSheetViewModel.swift */; };
@@ -59,10 +57,6 @@
 		5CEDC1842D2FC9D70072E8BF /* MovieTicket.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MovieTicket.swift; sourceTree = "<group>"; };
 		5CEDC1862D2FC9ED0072E8BF /* MovieTicketService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MovieTicketService.swift; sourceTree = "<group>"; };
 		5CEDC1902D2FCB9E0072E8BF /* MovieGemTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = MovieGemTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
-		5CEDC1922D2FCB9F0072E8BF /* MovieGemTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MovieGemTests.swift; sourceTree = "<group>"; };
-		5CEDC1992D2FCBEC0072E8BF /* MovieTicketViewModelTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MovieTicketViewModelTests.swift; sourceTree = "<group>"; };
-		5CEDC19E2D311EE90072E8BF /* MovieGem.xctestplan */ = {isa = PBXFileReference; lastKnownFileType = text; path = MovieGem.xctestplan; sourceTree = "<group>"; };
-		5CEDC19F2D3120470072E8BF /* MovieGemTestPlan.xctestplan */ = {isa = PBXFileReference; lastKnownFileType = text; name = MovieGemTestPlan.xctestplan; path = ../MovieGemTestPlan.xctestplan; sourceTree = "<group>"; };
 		5CEDC1A02D34F8ED0072E8BF /* MovieSheetData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MovieSheetData.swift; sourceTree = "<group>"; };
 		5CEDC1A22D34F9100072E8BF /* GoogleSheetsService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GoogleSheetsService.swift; sourceTree = "<group>"; };
 		5CEDC1A42D34F9570072E8BF /* MovieSheetViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MovieSheetViewModel.swift; sourceTree = "<group>"; };
@@ -106,10 +100,7 @@
 		5CEDC1642D2FC9C10072E8BF = {
 			isa = PBXGroup;
 			children = (
-				5CEDC19E2D311EE90072E8BF /* MovieGem.xctestplan */,
-				5CEDC19F2D3120470072E8BF /* MovieGemTestPlan.xctestplan */,
 				5CEDC16F2D2FC9C10072E8BF /* MovieGem */,
-				5CEDC1912D2FCB9F0072E8BF /* MovieGemTests */,
 				5CEDC16E2D2FC9C10072E8BF /* Products */,
 			);
 			sourceTree = "<group>";
@@ -138,15 +129,6 @@
 				5CEDC17E2D2FC9C20072E8BF /* Info.plist */,
 			);
 			path = MovieGem;
-			sourceTree = "<group>";
-		};
-		5CEDC1912D2FCB9F0072E8BF /* MovieGemTests */ = {
-			isa = PBXGroup;
-			children = (
-				5CEDC1922D2FCB9F0072E8BF /* MovieGemTests.swift */,
-				5CEDC1992D2FCBEC0072E8BF /* MovieTicketViewModelTests.swift */,
-			);
-			path = MovieGemTests;
 			sourceTree = "<group>";
 		};
 		5CEDC19B2D3119050072E8BF /* Model */ = {
@@ -331,8 +313,6 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				5CEDC1932D2FCB9F0072E8BF /* MovieGemTests.swift in Sources */,
-				5CEDC19A2D2FCBEC0072E8BF /* MovieTicketViewModelTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
