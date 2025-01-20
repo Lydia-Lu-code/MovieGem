@@ -39,25 +39,6 @@ class ShowtimeManagementViewController: UIViewController {
         return calendar
     }()
     
-//    private lazy var calendarView: UICalendarView = {
-//        let calendar = UICalendarView()
-//        calendar.calendar = .current
-//        calendar.locale = .current
-//        calendar.delegate = self
-//        calendar.translatesAutoresizingMaskIntoConstraints = false
-//        
-//        // 設置日期範圍
-//        let cal = Calendar.current
-//        let pastDate = cal.date(byAdding: .year, value: -1, to: Date()) ?? Date() // 允許查看過去一年的資料
-//        let futureDate = cal.date(byAdding: .year, value: 1, to: Date()) ?? Date()
-//        calendar.availableDateRange = DateInterval(start: pastDate, end: futureDate)
-//        
-//        let dateSelection = UICalendarSelectionSingleDate(delegate: self)
-//        calendar.selectionBehavior = dateSelection
-//        
-//        return calendar
-//    }()
-
     
     private lazy var segmentedControl: UISegmentedControl = {
         let items = ["全部", "售票中", "即將額滿", "已售完", "已取消"]
@@ -133,32 +114,6 @@ class ShowtimeManagementViewController: UIViewController {
             .store(in: &cancellables)
     }
     
-//    private func setupBindings() {
-//        viewModel.$filteredShowtimes
-//            .receive(on: DispatchQueue.main)
-//            .sink { [weak self] filteredShowtimes in
-//                print("📊 更新 TableView，場次數量: \(filteredShowtimes.count)")
-//                self?.tableView.reloadData()
-//            }
-//            .store(in: &cancellables)
-//        
-//        viewModel.$isLoading
-//            .receive(on: DispatchQueue.main)
-//            .sink { [weak self] isLoading in
-//                self?.updateLoadingState(isLoading)
-//            }
-//            .store(in: &cancellables)
-//        
-//        viewModel.$error
-//            .receive(on: DispatchQueue.main)
-//            .compactMap { $0 }
-//            .sink { [weak self] error in
-//                self?.showError(error)
-//            }
-//            .store(in: &cancellables)
-//    }
-    
-    
     private func showError(_ error: Error) {
         let alert = UIAlertController(
             title: "錯誤",
@@ -200,8 +155,6 @@ class ShowtimeManagementViewController: UIViewController {
         setupConstraints()
     }
     
-    // 在 ShowtimeManagementViewController.swift 中修改 setupConstraints 方法
-
     private func setupConstraints() {
         view.addSubview(scrollView)
         scrollView.addSubview(contentView)
@@ -280,79 +233,8 @@ class ShowtimeManagementViewController: UIViewController {
         view.layoutIfNeeded()
     }
     
-//    private func setupConstraints() {
-//        view.addSubview(scrollView)
-//        scrollView.addSubview(contentView)
-//        
-//        contentView.addSubview(calendarView)
-//        contentView.addSubview(segmentedControl)
-//        contentView.addSubview(tableView)
-//        
-//        // 設置 tableView 的高度約束
-//        let tableViewHeightConstraint = tableView.heightAnchor.constraint(equalToConstant: 300)
-//        tableViewHeightConstraint.priority = .defaultHigh // 設置優先級
-//        
-//        NSLayoutConstraint.activate([
-//            // ScrollView 約束
-//            scrollView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
-//            scrollView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
-//            scrollView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
-//            scrollView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor),
-//            
-//            // ContentView 約束
-//            contentView.topAnchor.constraint(equalTo: scrollView.topAnchor),
-//            contentView.leadingAnchor.constraint(equalTo: scrollView.leadingAnchor),
-//            contentView.trailingAnchor.constraint(equalTo: scrollView.trailingAnchor),
-//            contentView.bottomAnchor.constraint(equalTo: scrollView.bottomAnchor),
-//            contentView.widthAnchor.constraint(equalTo: scrollView.widthAnchor),
-//            
-//            // Calendar 約束
-//            calendarView.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 8),
-//            calendarView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 8),
-//            calendarView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -8),
-//            
-//            // SegmentedControl 約束
-//            segmentedControl.topAnchor.constraint(equalTo: calendarView.bottomAnchor, constant: 8),
-//            segmentedControl.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 8),
-//            segmentedControl.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -8),
-//            
-//            // TableView 約束
-//            tableView.topAnchor.constraint(equalTo: segmentedControl.bottomAnchor, constant: 8),
-//            tableView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor),
-//            tableView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor),
-//            tableView.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -8),
-//            tableViewHeightConstraint
-//        ])
-//    }
-
-    // 在 viewDidLayoutSubviews 中更新高度
-//    override func viewDidLayoutSubviews() {
-//        super.viewDidLayoutSubviews()
-//        
-//        // 計算所需的總高度
-//        let totalHeight = calendarView.frame.height +
-//            8 + // 間距
-//            segmentedControl.frame.height +
-//            8 + // 間距
-//            tableView.contentSize.height
-//        
-//        // 確保 contentView 至少和 scrollView 一樣高
-//        let minHeight = max(totalHeight, scrollView.frame.height)
-//        
-//        // 更新 contentView 的高度約束
-//        if let existingConstraint = contentView.constraints.first(where: { $0.firstAttribute == .height }) {
-//            existingConstraint.constant = minHeight
-//        } else {
-//            contentView.heightAnchor.constraint(equalToConstant: minHeight).isActive = true
-//        }
-//    }
-    
-    
-
-    
     @objc private func filterChanged(_ sender: UISegmentedControl) {
         let statuses: [MovieShowtime.ShowtimeStatus?] = [nil, .onSale, .almostFull, .soldOut, .canceled]
-//        viewModel.selectedStatus = statuses[sender.selectedSegmentIndex]
         viewModel.updateSelectedStatus(statuses[sender.selectedSegmentIndex])
         viewModel.filterShowtimes(date: viewModel.selectedDate, status: viewModel.selectedStatus)
     }
@@ -404,20 +286,6 @@ extension ShowtimeManagementViewController: UITableViewDataSource, UITableViewDe
         return cell
     }
     
-//    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-//        return viewModel.filteredShowtimes.count
-//    }
-//    
-//    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-//        guard let cell = tableView.dequeueReusableCell(withIdentifier: "ShowtimeCell", for: indexPath) as? ShowtimeTableViewCell else {
-//            return UITableViewCell()
-//        }
-//        
-//        let showtime = viewModel.filteredShowtimes[indexPath.row]
-//        cell.configure(with: showtime)
-//        return cell
-//    }
-    
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         tableView.deselectRow(at: indexPath, animated: true)
         let showtime = viewModel.filteredShowtimes[indexPath.row]
@@ -444,21 +312,6 @@ extension ShowtimeManagementViewController: UICalendarViewDelegate, UICalendarSe
         viewModel.loadBookingRecords(for: date)
     }
     
-//    func dateSelection(_ selection: UICalendarSelectionSingleDate, didSelectDate dateComponents: DateComponents?) {
-//        guard let date = Calendar.current.date(from: dateComponents ?? DateComponents()) else {
-//            print("❌ 日期轉換失敗")
-//            return
-//        }
-//        
-//        print("📅 選擇的日期: \(date)")
-//        
-//        // 重置狀態過濾
-//        selectedStatus = nil
-//        segmentedControl.selectedSegmentIndex = 0
-//        
-//        viewModel.selectedDate = date
-//        viewModel.loadBookingRecords(for: date)
-//    }
 
 }
 

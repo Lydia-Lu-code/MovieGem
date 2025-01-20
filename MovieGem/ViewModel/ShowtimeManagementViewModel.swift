@@ -65,76 +65,6 @@ class ShowtimeManagementViewModel: ObservableObject {
         }
     }
     
-//    private func loadRecords(for dateString: String) async throws -> [BookingRecord] {
-//        return try await withCheckedThrowingContinuation { [weak self] continuation in
-//            guard let self = self else {
-//                continuation.resume(throwing: URLError(.cancelled))
-//                return
-//            }
-//            
-//            self.googleSheetsService.fetchBookingRecords(for: dateString) { result in
-//                switch result {
-//                case .success(let records):
-//                    continuation.resume(returning: records)
-//                case .failure(let error):
-//                    continuation.resume(throwing: error)
-//                }
-//            }
-//        }
-//    }
-    
-//    private func loadRecords(for dateString: String) async throws -> [BookingRecord] {
-//        return try await withCheckedThrowingContinuation { [weak self] continuation in
-//            self?.googleSheetsService.fetchBookingRecords(for: dateString) { result in
-//                switch result {
-//                case .success(let records):
-//                    continuation.resume(returning: records)
-//                case .failure(let error):
-//                    // 處理錯誤，避免continuation洩漏
-//                    print("❌ 載入記錄失敗: \(error)")
-//                    continuation.resume(throwing: error)
-//                }
-//            }
-//        }
-//    }
-    
-//    private func convertToShowtime(_ record: BookingRecord) -> MovieShowtime {
-//        // 使用更健壮的狀態轉換
-//        let status: MovieShowtime.ShowtimeStatus
-//        switch record.status.lowercased() {
-//        case "on sale", "onsale", "售票中":
-//            status = .onSale
-//        case "almost full", "almostfull", "即將額滿":
-//            status = .almostFull
-//        case "sold out", "soldout", "已售完":
-//            status = .soldOut
-//        case "canceled", "已取消":
-//            status = .canceled
-//        default:
-//            status = .onSale  // 預設為售票中
-//        }
-//        
-//        return MovieShowtime(
-//            id: UUID().uuidString,
-//            movieId: record.movieId,
-//            theaterId: record.theaterId,
-//            startTime: record.startTime,
-//            endTime: record.endTime,
-//            price: ShowtimePrice(
-//                basePrice: record.price,
-//                weekendPrice: nil,
-//                holidayPrice: nil,
-//                studentPrice: nil,
-//                seniorPrice: nil,
-//                childPrice: nil,
-//                vipPrice: nil,
-//                discounts: []
-//            ),
-//            status: status,
-//            availableSeats: record.availableSeats
-//        )
-//    }
-    
     private func convertToShowtime(_ record: BookingRecord) -> MovieShowtime {
         // 票價轉換
         let price = (Double(record.totalAmount) ?? 0) / (Double(record.numberOfTickets) ?? 1)
@@ -294,47 +224,6 @@ class ShowtimeManagementViewModel: ObservableObject {
         }
     }
     
-//    private func formatDateForQuery(_ date: Date) -> String {
-//        let formatter = DateFormatter()
-//        formatter.dateFormat = "yyyy/MM/dd"  // 使用 yyyy/MM/dd 格式
-//        let formattedDate = formatter.string(from: date)
-//        return formattedDate
-//    }
-//    
-//    func loadBookingRecords(for date: Date) {
-//        guard !isLoading else { return }
-//        
-//        isLoading = true
-//        let dateString = formatDateForQuery(date)
-//        
-//        Task { @MainActor in
-//            defer { isLoading = false }
-//            
-//            do {
-//                let records = try await loadRecords(for: dateString)
-//                
-//                if records.isEmpty {
-//                    self.showtimes = []
-//                    self.filteredShowtimes = []
-//                } else {
-//                    self.showtimes = records.map(convertToShowtime)
-//                    self.filterShowtimes(date: date, status: self.selectedStatus)
-//                }
-//                
-//                print("🔍 載入記錄數量: \(self.showtimes.count)")
-//                print("🔍 過濾後場次數: \(self.filteredShowtimes.count)")
-//            } catch {
-//                print("❌ 載入失敗: \(error)")
-//                self.showtimes = []
-//                self.filteredShowtimes = []
-//                
-//                if !(error is URLError) {
-//                    self.error = error
-//                }
-//            }
-//        }
-//    }
-    
     func filterShowtimes(date: Date, status: MovieShowtime.ShowtimeStatus?) {
         let calendar = Calendar.current
         let startOfDay = calendar.startOfDay(for: date)
@@ -350,36 +239,5 @@ class ShowtimeManagementViewModel: ObservableObject {
         print("🏷 過濾狀態: \(String(describing: status))")
         print("✅ 過濾完成，結果數量: \(filteredShowtimes.count)")
     }
-    
-    
-//    func filterShowtimes(date: Date, status: MovieShowtime.ShowtimeStatus?) {
-//        let calendar = Calendar.current
-//        let startOfDay = calendar.startOfDay(for: date)
-//        let endOfDay = calendar.date(byAdding: .day, value: 1, to: startOfDay)!
-//        
-//        filteredShowtimes = showtimes.filter { showtime in
-//            let isWithinDay = showtime.startTime >= startOfDay && showtime.startTime < endOfDay
-//            let statusMatch = status == nil || showtime.status == status
-//            return isWithinDay && statusMatch
-//        }
-//        
-//        print("🔍 過濾日期: \(formatDate(startOfDay))")
-//        print("🏷 過濾狀態: \(String(describing: status))")
-//        print("✅ 過濾完成，結果數量: \(filteredShowtimes.count)")
-//    }
-
-//    // 確保過濾方法更加精確
-//    func filterShowtimes(date: Date, status: MovieShowtime.ShowtimeStatus?) {
-//        let calendar = Calendar.current
-//        filteredShowtimes = showtimes.filter { showtime in
-//            let isSameDay = calendar.isDate(showtime.startTime, inSameDayAs: date)
-//            let statusMatch = status == nil || showtime.status == status
-//            return isSameDay && statusMatch
-//        }
-//        
-//        print("🔍 過濾日期: \(formatDate(date))")
-//        print("🏷 過濾狀態: \(String(describing: status))")
-//        print("✅ 過濾完成，結果數量: \(filteredShowtimes.count)")
-//    }
     
 }
