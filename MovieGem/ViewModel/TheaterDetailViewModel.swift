@@ -22,12 +22,12 @@ class TheaterDetailViewModel: ObservableObject {
         self.sheetsService = sheetsService
     }
     
-    func fetchMovieData() {
+    func fetchMovieData(for date: Date = Date()) {  // 默認使用當前日期
         isLoading = true
         
         Task {
             do {
-                let fetchedMovies = try await sheetsService.fetchData()
+                let fetchedMovies = try await sheetsService.fetchData(for: date)
                 
                 // 可以在這裡根據影廳篩選相關的電影
                 let filteredMovies = fetchedMovies.filter { $0.seats.contains(theater.name) }
@@ -44,6 +44,7 @@ class TheaterDetailViewModel: ObservableObject {
             }
         }
     }
+    
     
     // 計算屬性
     var theaterInfo: String {

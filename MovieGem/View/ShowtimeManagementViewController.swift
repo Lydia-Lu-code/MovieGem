@@ -1,37 +1,16 @@
-//
-//  ShowtimeManagementViewController.swift
-//  MovieGem
-//
-//  Created by Lydia Lu on 2025/1/14.
-//
-
 import UIKit
+import Combine
 
 class ShowtimeManagementViewController: UIViewController {
     // MARK: - Properties
-    private var showtimes: [MovieShowtime] = []
-    private var filteredShowtimes: [MovieShowtime] = []
-    private var selectedDate: Date = Date()
-    private var theaters: [Theater] = []
     private let viewModel: ShowtimeManagementViewModel
-    
-    // 添加帶有 ViewModel 的初始化方法
-    init(viewModel: ShowtimeManagementViewModel) {
-        self.viewModel = viewModel
-        super.init(nibName: nil, bundle: nil)
-    }
-    
-    // 必須實現的初始化方法
-    required init?(coder: NSCoder) {
-        // 如果在 Storyboard 中使用，提供一個預設的 ViewModel
-        self.viewModel = ShowtimeManagementViewModel()
-        super.init(coder: coder)
-    }
+    private var cancellables = Set<AnyCancellable>()
     
     // MARK: - UI Components
     private lazy var scrollView: UIScrollView = {
         let scrollView = UIScrollView()
         scrollView.translatesAutoresizingMaskIntoConstraints = false
+        scrollView.alwaysBounceVertical = true
         return scrollView
     }()
     
@@ -47,22 +26,38 @@ class ShowtimeManagementViewController: UIViewController {
         calendar.locale = .current
         calendar.delegate = self
         calendar.translatesAutoresizingMaskIntoConstraints = false
-        calendar.fontDesign = .rounded
         
-        // 設置日曆的外觀
-        calendar.backgroundColor = .systemBackground
-        calendar.layer.cornerRadius = 12
-        calendar.layer.masksToBounds = true
+        // 設置日期範圍
+        let cal = Calendar.current
+        let pastDate = cal.date(byAdding: .year, value: -1, to: Date()) ?? Date()
+        let futureDate = cal.date(byAdding: .year, value: 1, to: Date()) ?? Date()
+        calendar.availableDateRange = DateInterval(start: pastDate, end: futureDate)
         
         let dateSelection = UICalendarSelectionSingleDate(delegate: self)
         calendar.selectionBehavior = dateSelection
         
-        // 移除固定高度限制，讓它自動適應內容
-        calendar.setContentHuggingPriority(.required, for: .vertical)
-        calendar.setContentCompressionResistancePriority(.required, for: .vertical)
-        
         return calendar
     }()
+    
+//    private lazy var calendarView: UICalendarView = {
+//        let calendar = UICalendarView()
+//        calendar.calendar = .current
+//        calendar.locale = .current
+//        calendar.delegate = self
+//        calendar.translatesAutoresizingMaskIntoConstraints = false
+//        
+//        // 設置日期範圍
+//        let cal = Calendar.current
+//        let pastDate = cal.date(byAdding: .year, value: -1, to: Date()) ?? Date() // 允許查看過去一年的資料
+//        let futureDate = cal.date(byAdding: .year, value: 1, to: Date()) ?? Date()
+//        calendar.availableDateRange = DateInterval(start: pastDate, end: futureDate)
+//        
+//        let dateSelection = UICalendarSelectionSingleDate(delegate: self)
+//        calendar.selectionBehavior = dateSelection
+//        
+//        return calendar
+//    }()
+
     
     private lazy var segmentedControl: UISegmentedControl = {
         let items = ["全部", "售票中", "即將額滿", "已售完", "已取消"]
@@ -84,21 +79,113 @@ class ShowtimeManagementViewController: UIViewController {
         return table
     }()
     
+    // MARK: - Initialization
+    init(viewModel: ShowtimeManagementViewModel = ShowtimeManagementViewModel()) {
+        self.viewModel = viewModel
+        super.init(nibName: nil, bundle: nil)
+    }
     
-    // MARK: - Lifecycle
+    required init?(coder: NSCoder) {
+        self.viewModel = ShowtimeManagementViewModel()
+        super.init(coder: coder)
+    }
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         setupUI()
-        loadInitialData()
+        setupBindings()
         
-        view.backgroundColor = .white
-        title = "場次管理"
+        // 載入當天的資料，去除時間部分
+        let today = Calendar.current.startOfDay(for: Date())
+        viewModel.selectedDate = today
+        viewModel.loadBookingRecords(for: today)
         
-        // 使用 viewModel 的方法
-        viewModel.loadData()
+        if let dateSelection = calendarView.selectionBehavior as? UICalendarSelectionSingleDate {
+            dateSelection.setSelected(Calendar.current.dateComponents([.year, .month, .day], from: today), animated: false)
+        }
     }
     
-    // MARK: - UI Setup
+    private func setupBindings() {
+        // 確保每次只觸發一次更新
+        viewModel.$filteredShowtimes
+            .receive(on: DispatchQueue.main)
+//            .removeDuplicates()  // 移除重複的值
+            .sink { [weak self] filteredShowtimes in
+                print("📊 更新 TableView，場次數量: \(filteredShowtimes.count)")
+                self?.tableView.reloadData()
+            }
+            .store(in: &cancellables)
+        
+        // 其他 binding 保持不變
+        viewModel.$isLoading
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] isLoading in
+                self?.updateLoadingState(isLoading)
+            }
+            .store(in: &cancellables)
+        
+        viewModel.$error
+            .receive(on: DispatchQueue.main)
+            .compactMap { $0 }
+            .sink { [weak self] error in
+                self?.showError(error)
+            }
+            .store(in: &cancellables)
+    }
+    
+//    private func setupBindings() {
+//        viewModel.$filteredShowtimes
+//            .receive(on: DispatchQueue.main)
+//            .sink { [weak self] filteredShowtimes in
+//                print("📊 更新 TableView，場次數量: \(filteredShowtimes.count)")
+//                self?.tableView.reloadData()
+//            }
+//            .store(in: &cancellables)
+//        
+//        viewModel.$isLoading
+//            .receive(on: DispatchQueue.main)
+//            .sink { [weak self] isLoading in
+//                self?.updateLoadingState(isLoading)
+//            }
+//            .store(in: &cancellables)
+//        
+//        viewModel.$error
+//            .receive(on: DispatchQueue.main)
+//            .compactMap { $0 }
+//            .sink { [weak self] error in
+//                self?.showError(error)
+//            }
+//            .store(in: &cancellables)
+//    }
+    
+    
+    private func showError(_ error: Error) {
+        let alert = UIAlertController(
+            title: "錯誤",
+            message: error.localizedDescription,
+            preferredStyle: .alert
+        )
+        alert.addAction(UIAlertAction(title: "確定", style: .default))
+        present(alert, animated: true)
+    }
+
+    private func updateLoadingState(_ isLoading: Bool) {
+        if isLoading {
+            // 顯示載入指示器
+            let activityIndicator = UIActivityIndicatorView(style: .medium)
+            activityIndicator.startAnimating()
+            navigationItem.rightBarButtonItem = UIBarButtonItem(customView: activityIndicator)
+        } else {
+            // 恢復重新整理按鈕
+            navigationItem.rightBarButtonItem = UIBarButtonItem(
+                image: UIImage(systemName: "arrow.clockwise"),
+                style: .plain,
+                target: self,
+                action: #selector(refreshData)
+            )
+        }
+    }
+    
     private func setupUI() {
         view.backgroundColor = .systemBackground
         title = "場次管理"
@@ -110,6 +197,12 @@ class ShowtimeManagementViewController: UIViewController {
             action: #selector(refreshData)
         )
         
+        setupConstraints()
+    }
+    
+    // 在 ShowtimeManagementViewController.swift 中修改 setupConstraints 方法
+
+    private func setupConstraints() {
         view.addSubview(scrollView)
         scrollView.addSubview(contentView)
         
@@ -117,299 +210,166 @@ class ShowtimeManagementViewController: UIViewController {
         contentView.addSubview(segmentedControl)
         contentView.addSubview(tableView)
         
+        // 設定 contentView 的寬度約束
+        let contentViewWidth = contentView.widthAnchor.constraint(equalTo: scrollView.widthAnchor)
+        contentViewWidth.priority = .required // 提高優先級
+        
+        // 設定最小高度約束
+        let contentViewMinHeight = contentView.heightAnchor.constraint(greaterThanOrEqualTo: view.heightAnchor)
+        contentViewMinHeight.priority = .defaultHigh
+        
         NSLayoutConstraint.activate([
-            // ScrollView
+            // ScrollView 約束
             scrollView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
             scrollView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
             scrollView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
             scrollView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor),
             
-            // ContentView
-            contentView.topAnchor.constraint(equalTo: scrollView.contentLayoutGuide.topAnchor),
-            contentView.leadingAnchor.constraint(equalTo: scrollView.contentLayoutGuide.leadingAnchor),
-            contentView.trailingAnchor.constraint(equalTo: scrollView.contentLayoutGuide.trailingAnchor),
-            contentView.bottomAnchor.constraint(equalTo: scrollView.contentLayoutGuide.bottomAnchor),
-            // 確保 contentView 的寬度等於 scrollView 的框架寬度
-            contentView.widthAnchor.constraint(equalTo: scrollView.frameLayoutGuide.widthAnchor),
+            // ContentView 約束
+            contentView.topAnchor.constraint(equalTo: scrollView.topAnchor),
+            contentView.leadingAnchor.constraint(equalTo: scrollView.leadingAnchor),
+            contentView.trailingAnchor.constraint(equalTo: scrollView.trailingAnchor),
+            contentView.bottomAnchor.constraint(equalTo: scrollView.bottomAnchor),
+            contentViewWidth,
+            contentViewMinHeight,
             
-            // Calendar
-            calendarView.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 8),
-            calendarView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 8),
-            calendarView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -8),
+            // Calendar 約束
+            calendarView.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 16),
+            calendarView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 16),
+            calendarView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -16),
             
-            // SegmentedControl
-            segmentedControl.topAnchor.constraint(equalTo: calendarView.bottomAnchor, constant: 8),
-            segmentedControl.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 8),
-            segmentedControl.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -8),
+            // SegmentedControl 約束
+            segmentedControl.topAnchor.constraint(equalTo: calendarView.bottomAnchor, constant: 16),
+            segmentedControl.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 16),
+            segmentedControl.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -16),
             
-            // TableView - 移除固定高度約束
-            tableView.topAnchor.constraint(equalTo: segmentedControl.bottomAnchor, constant: 8),
+            // TableView 約束
+            tableView.topAnchor.constraint(equalTo: segmentedControl.bottomAnchor, constant: 16),
             tableView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor),
             tableView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor),
-            tableView.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -8)
+            tableView.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -16),
+            tableView.heightAnchor.constraint(greaterThanOrEqualToConstant: 300)
         ])
-        
-        // 確保 ScrollView 可以垂直滾動
-        scrollView.alwaysBounceVertical = true
     }
 
+    // 更新 viewDidLayoutSubviews 方法
     override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
         
-        // 計算並更新 contentView 的最小高度
-        let totalHeight = calendarView.frame.height +
-            segmentedControl.frame.height +
-            tableView.contentSize.height + 32  // 加上間距
+        // 計算所需的總高度
+        let contentHeight = calendarView.frame.height +
+                           16 + // 間距
+                           segmentedControl.frame.height +
+                           16 + // 間距
+                           max(tableView.contentSize.height, 300) +
+                           32 // 上下邊距
         
-        // 確保 contentView 的高度至少等於 scrollView 的高度
-        let minHeight = max(totalHeight, scrollView.frame.height)
+        // 確保 contentView 至少和 scrollView 一樣高
+        let minHeight = max(contentHeight, scrollView.frame.height)
         
         // 更新 contentView 的高度約束
         if let existingConstraint = contentView.constraints.first(where: { $0.firstAttribute == .height }) {
             existingConstraint.constant = minHeight
         } else {
-            contentView.heightAnchor.constraint(equalToConstant: minHeight).isActive = true
+            let heightConstraint = contentView.heightAnchor.constraint(equalToConstant: minHeight)
+            heightConstraint.priority = .defaultHigh // 設置優先級
+            heightConstraint.isActive = true
         }
+        
+        // 強制更新佈局
+        view.layoutIfNeeded()
     }
+    
+//    private func setupConstraints() {
+//        view.addSubview(scrollView)
+//        scrollView.addSubview(contentView)
+//        
+//        contentView.addSubview(calendarView)
+//        contentView.addSubview(segmentedControl)
+//        contentView.addSubview(tableView)
+//        
+//        // 設置 tableView 的高度約束
+//        let tableViewHeightConstraint = tableView.heightAnchor.constraint(equalToConstant: 300)
+//        tableViewHeightConstraint.priority = .defaultHigh // 設置優先級
+//        
+//        NSLayoutConstraint.activate([
+//            // ScrollView 約束
+//            scrollView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
+//            scrollView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+//            scrollView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+//            scrollView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor),
+//            
+//            // ContentView 約束
+//            contentView.topAnchor.constraint(equalTo: scrollView.topAnchor),
+//            contentView.leadingAnchor.constraint(equalTo: scrollView.leadingAnchor),
+//            contentView.trailingAnchor.constraint(equalTo: scrollView.trailingAnchor),
+//            contentView.bottomAnchor.constraint(equalTo: scrollView.bottomAnchor),
+//            contentView.widthAnchor.constraint(equalTo: scrollView.widthAnchor),
+//            
+//            // Calendar 約束
+//            calendarView.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 8),
+//            calendarView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 8),
+//            calendarView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -8),
+//            
+//            // SegmentedControl 約束
+//            segmentedControl.topAnchor.constraint(equalTo: calendarView.bottomAnchor, constant: 8),
+//            segmentedControl.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 8),
+//            segmentedControl.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -8),
+//            
+//            // TableView 約束
+//            tableView.topAnchor.constraint(equalTo: segmentedControl.bottomAnchor, constant: 8),
+//            tableView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor),
+//            tableView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor),
+//            tableView.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -8),
+//            tableViewHeightConstraint
+//        ])
+//    }
 
-    // MARK: - Data Loading
-    private func loadInitialData() {
-        // 載入影廳資料
-        theaters = [
-            Theater(id: "1", name: "第一廳", capacity: 120, type: .standard,
-                   status: .active, seatLayout: Array(repeating: Array(repeating: .normal, count: 12), count: 10)),
-            Theater(id: "2", name: "IMAX廳", capacity: 180, type: .imax,
-                   status: .active, seatLayout: Array(repeating: Array(repeating: .normal, count: 15), count: 12))
-        ]
-        
-        // 模擬場次資料
-        let showtimeData: [MovieShowtime] = [
-            MovieShowtime(
-                id: "1",
-                movieId: "movie1",
-                theaterId: "1",
-                startTime: Date().addingTimeInterval(3600),
-                endTime: Date().addingTimeInterval(3600 * 3),
-                price: ShowtimePrice(
-                    basePrice: 280,
-                    weekendPrice: nil,
-                    holidayPrice: nil,
-                    studentPrice: nil,
-                    seniorPrice: nil,
-                    childPrice: nil,
-                    vipPrice: nil,
-                    discounts: []  // 添加空的折扣陣列
-                ),
-                status: .onSale,
-                availableSeats: 80
-            ),
-            MovieShowtime(
-                id: "2",
-                movieId: "movie2",
-                theaterId: "2",
-                startTime: Date().addingTimeInterval(3600 * 4),
-                endTime: Date().addingTimeInterval(3600 * 6),
-                price: ShowtimePrice(
-                    basePrice: 380,
-                    weekendPrice: nil,
-                    holidayPrice: nil,
-                    studentPrice: nil,
-                    seniorPrice: nil,
-                    childPrice: nil,
-                    vipPrice: nil,
-                    discounts: []  // 添加空的折扣陣列
-                ),
-                status: .almostFull,
-                availableSeats: 20
-            )
-        ]
-        
-        
-        showtimes = showtimeData
-        filterShowtimes()
-    }
+    // 在 viewDidLayoutSubviews 中更新高度
+//    override func viewDidLayoutSubviews() {
+//        super.viewDidLayoutSubviews()
+//        
+//        // 計算所需的總高度
+//        let totalHeight = calendarView.frame.height +
+//            8 + // 間距
+//            segmentedControl.frame.height +
+//            8 + // 間距
+//            tableView.contentSize.height
+//        
+//        // 確保 contentView 至少和 scrollView 一樣高
+//        let minHeight = max(totalHeight, scrollView.frame.height)
+//        
+//        // 更新 contentView 的高度約束
+//        if let existingConstraint = contentView.constraints.first(where: { $0.firstAttribute == .height }) {
+//            existingConstraint.constant = minHeight
+//        } else {
+//            contentView.heightAnchor.constraint(equalToConstant: minHeight).isActive = true
+//        }
+//    }
     
-    private func filterShowtimes() {
-        let calendar = Calendar.current
-        filteredShowtimes = showtimes.filter { showtime in
-            // 首先過濾日期
-            let isSameDay = calendar.isDate(showtime.startTime, inSameDayAs: selectedDate)
-            
-            // 然後根據選擇的狀態過濾
-            let statusMatch: Bool
-            switch segmentedControl.selectedSegmentIndex {
-            case 0: // 全部
-                statusMatch = true
-            case 1: // 售票中
-                statusMatch = showtime.status == .onSale
-            case 2: // 即將額滿
-                statusMatch = showtime.status == .almostFull
-            case 3: // 已售完
-                statusMatch = showtime.status == .soldOut
-            case 4: // 已取消
-                statusMatch = showtime.status == .canceled
-            default:
-                statusMatch = true
-            }
-            
-            return isSameDay && statusMatch
-        }
-        
-        tableView.reloadData()
-    }
     
-    // MARK: - Actions
+
+    
     @objc private func filterChanged(_ sender: UISegmentedControl) {
-        filterShowtimes()
+        let statuses: [MovieShowtime.ShowtimeStatus?] = [nil, .onSale, .almostFull, .soldOut, .canceled]
+//        viewModel.selectedStatus = statuses[sender.selectedSegmentIndex]
+        viewModel.updateSelectedStatus(statuses[sender.selectedSegmentIndex])
+        viewModel.filterShowtimes(date: viewModel.selectedDate, status: viewModel.selectedStatus)
     }
+    
+    
     
     @objc private func refreshData() {
-        // 模擬重新載入資料
-        loadInitialData()
-    }
-    
-    @objc private func addShowtimeTapped() {
-        let alert = UIAlertController(title: "新增場次", message: nil, preferredStyle: .alert)
-        
-        // 選擇影廳
-        alert.addTextField { textField in
-            textField.placeholder = "選擇影廳"
-            let pickerView = UIPickerView()
-            pickerView.delegate = self
-            pickerView.dataSource = self
-            textField.inputView = pickerView
-        }
-        
-        // 選擇時間
-        alert.addTextField { textField in
-            textField.placeholder = "開始時間"
-            let datePicker = UIDatePicker()
-            datePicker.datePickerMode = .time
-            datePicker.preferredDatePickerStyle = .wheels
-            textField.inputView = datePicker
-        }
-        
-        // 設定票價
-        alert.addTextField { textField in
-            textField.placeholder = "基本票價"
-            textField.keyboardType = .numberPad
-        }
-        
-        alert.addAction(UIAlertAction(title: "取消", style: .cancel))
-        alert.addAction(UIAlertAction(title: "確定", style: .default) { [weak self] _ in
-            guard let theaterId = alert.textFields?[0].text,
-                  let startTimeStr = alert.textFields?[1].text,
-                  let priceStr = alert.textFields?[2].text,
-                  let price = Double(priceStr) else { return }
-            
-            // 這裡應該要有更完整的資料驗證
-            let newShowtime = MovieShowtime(
-                id: UUID().uuidString,
-                movieId: "movie1", // 應該要從電影列表中選擇
-                theaterId: theaterId,
-                startTime: Date(),
-                endTime: Date().addingTimeInterval(7200),
-                price: ShowtimePrice(
-                    basePrice: price,
-                    weekendPrice: nil,
-                    holidayPrice: nil,
-                    studentPrice: nil,
-                    seniorPrice: nil,
-                    childPrice: nil,
-                    vipPrice: nil,
-                    discounts: []
-                ),
-                status: .onSale,
-                availableSeats: 100
-            )
-            
-            
-            self?.showtimes.append(newShowtime)
-            self?.filterShowtimes()
-        })
-        
-        present(alert, animated: true)
-    }
-}
-
-// MARK: - UITableViewDataSource & Delegate
-extension ShowtimeManagementViewController: UITableViewDataSource, UITableViewDelegate {
-    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return filteredShowtimes.count
-    }
-    
-    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        guard let cell = tableView.dequeueReusableCell(withIdentifier: "ShowtimeCell", for: indexPath) as? ShowtimeTableViewCell else {
-            return UITableViewCell()
-        }
-        
-        let showtime = filteredShowtimes[indexPath.row]
-        cell.configure(with: showtime)
-        return cell
-    }
-    
-    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        tableView.deselectRow(at: indexPath, animated: true)
-        let showtime = filteredShowtimes[indexPath.row]
-        showShowtimeDetails(showtime)
-    }
-    
-    func tableView(_ tableView: UITableView, trailingSwipeActionsConfigurationForRowAt indexPath: IndexPath)
-        -> UISwipeActionsConfiguration? {
-        
-        let showtime = filteredShowtimes[indexPath.row]
-        
-        // 取消場次
-        let cancel = UIContextualAction(style: .destructive, title: "取消") { [weak self] _, _, completion in
-            var updatedShowtime = showtime
-            updatedShowtime.status = .canceled
-            
-            if let index = self?.showtimes.firstIndex(where: { $0.id == showtime.id }) {
-                self?.showtimes[index] = updatedShowtime
-                self?.filterShowtimes()
-            }
-            
-            completion(true)
-        }
-        
-        // 修改狀態
-        let status = UIContextualAction(style: .normal, title: "狀態") { [weak self] _, _, completion in
-            let alert = UIAlertController(title: "更改狀態", message: nil, preferredStyle: .actionSheet)
-            
-            [MovieShowtime.ShowtimeStatus.onSale,
-             .almostFull,
-             .soldOut,
-             .canceled].forEach { status in
-                let action = UIAlertAction(title: status.rawValue, style: .default) { _ in
-                    var updatedShowtime = showtime
-                    updatedShowtime.status = status
-                    
-                    if let index = self?.showtimes.firstIndex(where: { $0.id == showtime.id }) {
-                        self?.showtimes[index] = updatedShowtime
-                        self?.filterShowtimes()
-                    }
-                }
-                alert.addAction(action)
-            }
-            
-            alert.addAction(UIAlertAction(title: "取消", style: .cancel))
-            self?.present(alert, animated: true)
-            completion(true)
-        }
-        
-        status.backgroundColor = .systemBlue
-        
-        return UISwipeActionsConfiguration(actions: [cancel, status])
+        viewModel.loadData()
     }
     
     private func showShowtimeDetails(_ showtime: MovieShowtime) {
-        // 這裡可以實作場次詳細資訊的顯示邏輯
         let alert = UIAlertController(
             title: "場次詳細資訊",
             message: """
-                開始時間: \(formatDate(showtime.startTime))
-                結束時間: \(formatDate(showtime.endTime))
-                影廳: \(theaters.first(where: { $0.id == showtime.theaterId })?.name ?? "未知")
+                開始時間: \(viewModel.formatDate(showtime.startTime))
+                結束時間: \(viewModel.formatDate(showtime.endTime))
+                影廳: \(viewModel.getTheaterName(for: showtime.theaterId))
                 票價: \(showtime.price.basePrice)
                 剩餘座位: \(showtime.availableSeats)
                 狀態: \(showtime.status.rawValue)
@@ -421,44 +381,84 @@ extension ShowtimeManagementViewController: UITableViewDataSource, UITableViewDe
         present(alert, animated: true)
     }
     
-    private func formatDate(_ date: Date) -> String {
-        let formatter = DateFormatter()
-        formatter.dateFormat = "yyyy/MM/dd HH:mm"
-        return formatter.string(from: date)
-    }
+    
+    
 }
 
-// MARK: - UICalendarViewDelegate
-extension ShowtimeManagementViewController: UICalendarViewDelegate, UICalendarSelectionSingleDateDelegate {
-    func dateSelection(_ selection: UICalendarSelectionSingleDate, didSelectDate dateComponents: DateComponents?) {
-        guard let date = Calendar.current.date(from: dateComponents ?? DateComponents()) else { return }
-        selectedDate = date
-        filterShowtimes()
+// MARK: - UITableViewDataSource & Delegate
+extension ShowtimeManagementViewController: UITableViewDataSource, UITableViewDelegate {
+    
+    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+        print("📊 TableView 請求行數: \(viewModel.filteredShowtimes.count)")
+        return viewModel.filteredShowtimes.count
     }
     
-    func calendarView(_ calendarView: UICalendarView, decorationFor dateComponents: DateComponents) -> UICalendarView.Decoration? {
-        // 這裡可以加入日期裝飾，例如標記有場次的日期
-        return nil
-    }
-}
-
-// MARK: - UIPickerViewDelegate & DataSource
-extension ShowtimeManagementViewController: UIPickerViewDelegate, UIPickerViewDataSource {
-    func numberOfComponents(in pickerView: UIPickerView) -> Int {
-        return 1
-    }
-    
-    func pickerView(_ pickerView: UIPickerView, numberOfRowsInComponent component: Int) -> Int {
-        return theaters.count
-    }
-    
-    func pickerView(_ pickerView: UIPickerView, titleForRow row: Int, forComponent component: Int) -> String? {
-        return theaters[row].name
-    }
-    
-    func pickerView(_ pickerView: UIPickerView, didSelectRow row: Int, inComponent component: Int) {
-        if let textField = pickerView.inputView as? UITextField {
-            textField.text = theaters[row].name
+    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        print("🔄 配置 cell，行號: \(indexPath.row)")
+        guard let cell = tableView.dequeueReusableCell(withIdentifier: "ShowtimeCell", for: indexPath) as? ShowtimeTableViewCell else {
+            return UITableViewCell()
         }
+        
+        let showtime = viewModel.filteredShowtimes[indexPath.row]
+        cell.configure(with: showtime)
+        return cell
+    }
+    
+//    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+//        return viewModel.filteredShowtimes.count
+//    }
+//    
+//    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+//        guard let cell = tableView.dequeueReusableCell(withIdentifier: "ShowtimeCell", for: indexPath) as? ShowtimeTableViewCell else {
+//            return UITableViewCell()
+//        }
+//        
+//        let showtime = viewModel.filteredShowtimes[indexPath.row]
+//        cell.configure(with: showtime)
+//        return cell
+//    }
+    
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        tableView.deselectRow(at: indexPath, animated: true)
+        let showtime = viewModel.filteredShowtimes[indexPath.row]
+        showShowtimeDetails(showtime)
     }
 }
+
+extension ShowtimeManagementViewController: UICalendarViewDelegate, UICalendarSelectionSingleDateDelegate {
+    
+    
+    func dateSelection(_ selection: UICalendarSelectionSingleDate, didSelectDate dateComponents: DateComponents?) {
+        guard let date = Calendar.current.date(from: dateComponents ?? DateComponents()) else {
+            print("❌ 日期轉換失敗")
+            return
+        }
+        
+        print("📅 選擇的日期: \(date)")
+        
+        // 重置狀態過濾
+        viewModel.selectedStatus = nil  // 修改這裡
+        segmentedControl.selectedSegmentIndex = 0
+        
+        viewModel.selectedDate = date
+        viewModel.loadBookingRecords(for: date)
+    }
+    
+//    func dateSelection(_ selection: UICalendarSelectionSingleDate, didSelectDate dateComponents: DateComponents?) {
+//        guard let date = Calendar.current.date(from: dateComponents ?? DateComponents()) else {
+//            print("❌ 日期轉換失敗")
+//            return
+//        }
+//        
+//        print("📅 選擇的日期: \(date)")
+//        
+//        // 重置狀態過濾
+//        selectedStatus = nil
+//        segmentedControl.selectedSegmentIndex = 0
+//        
+//        viewModel.selectedDate = date
+//        viewModel.loadBookingRecords(for: date)
+//    }
+
+}
+

@@ -106,6 +106,7 @@ class ShowtimeTableViewCell: UITableViewCell {
             stackView.trailingAnchor.constraint(equalTo: containerView.trailingAnchor, constant: -12),
             stackView.bottomAnchor.constraint(equalTo: containerView.bottomAnchor, constant: -12)
         ])
+        
     }
     
     func configure(with showtime: MovieShowtime) {

@@ -99,3 +99,4 @@ class DiscountTableViewCell: UITableViewCell {
         statusLabel.text = discount.type.rawValue
     }
 }
+

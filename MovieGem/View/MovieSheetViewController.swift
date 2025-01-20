@@ -25,17 +25,27 @@ class MovieSheetViewController: UIViewController {
     }()
     
     // MARK: - Initialization
-    init(viewModel: MovieSheetViewModel) {
+    init(viewModel: MovieSheetViewModel = MovieSheetViewModel(sheetsService: GoogleSheetsService(apiEndpoint: SheetDBConfig.apiEndpoint))) {
         self.viewModel = viewModel
         super.init(nibName: nil, bundle: nil)
     }
     
     required init?(coder: NSCoder) {
-        print("🔵 MovieSheetViewController - init(coder:)")
         let service = GoogleSheetsService(apiEndpoint: SheetDBConfig.apiEndpoint)
         self.viewModel = MovieSheetViewModel(sheetsService: service)
         super.init(coder: coder)
     }
+  
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        
+        // 只在資料為空時才重新加載
+        if viewModel.movies.isEmpty {
+            viewModel.fetchMovieData()
+        }
+    }
+
+
     
 
     // MARK: - Lifecycle
@@ -44,6 +54,7 @@ class MovieSheetViewController: UIViewController {
         print("🔵 MovieSheetViewController - viewDidLoad")
         setupUI()
         setupBindings()
+        setupNotifications()
         title = "訂票紀錄"
         viewModel.fetchMovieData()
     }
@@ -66,10 +77,14 @@ class MovieSheetViewController: UIViewController {
     }
     
     private func setupBindings() {
+        
         viewModel.$movies
             .receive(on: DispatchQueue.main)
-            .sink { [weak self] _ in
-                self?.tableView.reloadData()
+            .sink { [weak self] movies in
+                // 只在資料不為空時重新加載表格
+                if !movies.isEmpty {
+                    self?.tableView.reloadData()
+                }
             }
             .store(in: &cancellables)
         
@@ -105,7 +120,35 @@ class MovieSheetViewController: UIViewController {
         alert.addAction(UIAlertAction(title: "確定", style: .default))
         present(alert, animated: true)
     }
+    
+    private func setupNotifications() {
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(handleDateChange),
+            name: Notification.Name("SelectedDateChanged"),
+            object: nil
+        )
+    }
+    
+    @objc private func handleDateChange(_ notification: Notification) {
+        guard let date = notification.userInfo?["selectedDate"] as? Date else { return }
+        filterMoviesByDate(date)
+    }
+    
+    deinit {
+        NotificationCenter.default.removeObserver(self)
+    }
 
+    func filterMoviesByDate(_ date: Date) {
+        let calendar = Calendar.current
+        let filteredMovies = viewModel.movies.filter { movie in
+            guard let movieDate = movie.date else { return false }
+            return calendar.isDate(movieDate, inSameDayAs: date)
+        }
+        // 更新顯示
+        viewModel.movies = filteredMovies
+    }
+    
 }
 
 // MARK: - UITableViewDataSource & Delegate
