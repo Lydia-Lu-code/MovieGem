@@ -246,14 +246,15 @@ class ShowtimeManagementViewController: UIViewController {
     private func showShowtimeDetails(_ showtime: MovieShowtime) {
         let alert = UIAlertController(
             title: "場次詳細資訊",
-            message: """
-                開始時間: \(viewModel.formatDate(showtime.startTime))
-                結束時間: \(viewModel.formatDate(showtime.endTime))
-                影廳: \(viewModel.getTheaterName(for: showtime.theaterId))
-                票價: \(showtime.price.basePrice)
-                剩餘座位: \(showtime.availableSeats)
-                狀態: \(showtime.status.rawValue)
-                """,
+            message: viewModel.getShowtimeDetailsMessage(showtime),
+//            message: """
+//                開始時間: \(viewModel.formatDate(showtime.startTime))
+//                結束時間: \(viewModel.formatDate(showtime.endTime))
+//                影廳: \(viewModel.getTheaterName(for: showtime.theaterId))
+//                票價: \(showtime.price.basePrice)
+//                剩餘座位: \(showtime.availableSeats)
+//                狀態: \(showtime.status.rawValue)
+//                """,
             preferredStyle: .alert
         )
         

@@ -55,4 +55,14 @@ class TheaterDetailViewModel: ObservableObject {
         狀態: \(theater.status.rawValue)
         """
     }
+
+    func getMovieCellText(_ movie: MovieSheetData) -> String {
+        return """
+        電影: \(movie.movieName)
+        日期: \(movie.showDate)
+        時間: \(movie.showTime)
+        座位: \(movie.seats)
+        """
+    }
+    
 }

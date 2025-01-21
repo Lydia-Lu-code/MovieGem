@@ -230,4 +230,15 @@ class ShowtimeManagementViewModel: ObservableObject {
         }
     }
     
+    func getShowtimeDetailsMessage(_ showtime: MovieShowtime) -> String {
+        return """
+        開始時間: \(formatDate(showtime.startTime))
+        結束時間: \(formatDate(showtime.endTime))
+        影廳: \(getTheaterName(for: showtime.theaterId))
+        票價: \(showtime.price.basePrice)
+        剩餘座位: \(showtime.availableSeats)
+        狀態: \(showtime.status.rawValue)
+        """
+    }
+    
 }

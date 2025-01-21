@@ -42,7 +42,21 @@ class MovieSheetViewModel: ObservableObject {
     
     var cancellables = Set<AnyCancellable>()
     
-    // 添加篩選和排序方法
+    // 移動 filterMoviesByDate 從 ViewController 到 ViewModel
+    func filterMoviesByDate(_ date: Date) {
+        let calendar = Calendar.current
+        movies = movies.filter { movie in
+            guard let movieDate = movie.date else { return false }
+            return calendar.isDate(movieDate, inSameDayAs: date)
+        }
+    }
+    
+    // 新增錯誤訊息處理
+    func getErrorMessage(_ error: Error) -> String {
+        return error.localizedDescription
+    }
+    
+    
     func filterMovies(by movieName: String) -> [MovieSheetData] {
         movies.filter { $0.movieName.contains(movieName) }
     }
@@ -61,5 +75,7 @@ class MovieSheetViewModel: ObservableObject {
             return calendar.isDate(movieDate, inSameDayAs: date)
         }
     }
+    
+
 }
 

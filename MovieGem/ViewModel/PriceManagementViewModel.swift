@@ -6,6 +6,7 @@
 //
 
 import Foundation
+import UIKit
 
 class PriceManagementViewModel {
     // MARK: - Publishers
@@ -126,5 +127,21 @@ class PriceManagementViewModel {
         case .fixedAmount:
             return max(0, price.basePrice - discount.value)
         }
+    }
+    
+    func createAddPriceAlert() -> (title: String, message: String?, fields: [(String, UIKeyboardType)]) {
+        return (
+            title: "新增票價",
+            message: nil,
+            fields: [
+                ("基本票價", .numberPad),
+                ("假日票價", .numberPad),
+                ("學生票價", .numberPad)
+            ]
+        )
+    }
+    
+    func validatePriceInput(_ values: [String?]) -> Bool {
+        return values.compactMap { Double($0 ?? "") }.count == values.count
     }
 }
