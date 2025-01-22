@@ -5,9 +5,6 @@ protocol MovieAdminViewModelProtocol: ObservableObject {
     func loadData()
 }
 
-import UIKit
-import Combine
-
 class MovieAdminViewController: UIViewController {
     // MARK: - Properties
     private var cancellables = Set<AnyCancellable>()

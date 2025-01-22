@@ -132,24 +132,11 @@ class MovieSheetViewController: UIViewController {
     @objc private func handleDateChange(_ notification: Notification) {
         guard let date = notification.userInfo?["selectedDate"] as? Date else { return }
         viewModel.filterMoviesByDate(date)  // 使用 ViewModel 的方法
-        
-//        guard let date = notification.userInfo?["selectedDate"] as? Date else { return }
-//        filterMoviesByDate(date)
     }
     
     deinit {
         NotificationCenter.default.removeObserver(self)
     }
-
-//    func filterMoviesByDate(_ date: Date) {
-//        let calendar = Calendar.current
-//        let filteredMovies = viewModel.movies.filter { movie in
-//            guard let movieDate = movie.date else { return false }
-//            return calendar.isDate(movieDate, inSameDayAs: date)
-//        }
-//        // 更新顯示
-//        viewModel.movies = filteredMovies
-//    }
     
 }
 

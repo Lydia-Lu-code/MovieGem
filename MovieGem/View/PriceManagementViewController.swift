@@ -95,18 +95,6 @@ class PriceManagementViewController: UIViewController {
     
     // MARK: - Bindings
     private func setupBindings() {
-//        // 監聽載入狀態
-//        // 監聽分段控制
-//        viewModel.$selectedSegmentIndex
-//            .receive(on: DispatchQueue.main)
-//            .sink { [weak self] index in
-//                self?.segmentedControl.selectedSegmentIndex = index
-//                self?.tableView.reloadData()
-//                self?.tableView.reloadData()
-//                self?.tableView.reloadData()
-//            }
-//            .store(in: &cancellables)
-        
         
         // 監聽錯誤
         viewModel.$error
@@ -252,23 +240,7 @@ class PriceManagementViewController: UIViewController {
                 textField.keyboardType = keyboardType
             }
         }
-        
-//        let alert = UIAlertController(title: "新增票價", message: nil, preferredStyle: .alert)
-//        
-//        alert.addTextField { textField in
-//            textField.placeholder = "基本票價"
-//            textField.keyboardType = .numberPad
-//        }
-//        
-//        alert.addTextField { textField in
-//            textField.placeholder = "假日票價"
-//            textField.keyboardType = .numberPad
-//        }
-//        
-//        alert.addTextField { textField in
-//            textField.placeholder = "學生票價"
-//            textField.keyboardType = .numberPad
-//        }
+
         
         alert.addAction(UIAlertAction(title: "取消", style: .cancel))
         alert.addAction(UIAlertAction(title: "確定", style: .default) { [weak self] _ in

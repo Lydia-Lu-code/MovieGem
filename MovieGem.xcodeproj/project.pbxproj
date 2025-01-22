@@ -146,10 +146,10 @@
 			children = (
 				5CEDC1C82D376F1E0072E8BF /* MovieTicketViewModel.swift */,
 				5CEDC1A42D34F9570072E8BF /* MovieSheetViewModel.swift */,
+				5CEDC1D22D38CB650072E8BF /* ShowtimeManagementViewModel.swift */,
 				5CEDC1BA2D3649480072E8BF /* PriceManagementViewModel.swift */,
 				5CEDC1CC2D377D4D0072E8BF /* TheaterDetailViewModel.swift */,
 				5CEDC1D02D38CB490072E8BF /* TheaterManagementViewModel.swift */,
-				5CEDC1D22D38CB650072E8BF /* ShowtimeManagementViewModel.swift */,
 			);
 			path = ViewModel;
 			sourceTree = "<group>";

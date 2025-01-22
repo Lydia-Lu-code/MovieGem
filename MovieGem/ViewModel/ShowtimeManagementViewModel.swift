@@ -10,6 +10,7 @@ class ShowtimeManagementViewModel: ObservableObject {
     @Published var selectedStatus: MovieShowtime.ShowtimeStatus? = nil
     @Published var isLoading = false
     @Published var error: Error?
+    @Published var datesWithData: Set<DateComponents> = []
     
     private let googleSheetsService: GoogleSheetsService
     private var cancellables = Set<AnyCancellable>()
@@ -18,15 +19,11 @@ class ShowtimeManagementViewModel: ObservableObject {
     // MARK: - Initialization
     init(googleSheetsService: GoogleSheetsService = GoogleSheetsService(apiEndpoint: SheetDBConfig.apiEndpoint)) {
         self.googleSheetsService = googleSheetsService
-        loadData() // 先載入基本數據
+        setupBindings() // 先設置綁定
         
-        // 載入當天資料
-        let today = Date()
-        self.selectedDate = today
-        loadBookingRecords(for: today)
-        
-        setupBindings() // 然後設置綁定
     }
+    
+
     
     
     private func setupBindings() {
@@ -188,35 +185,16 @@ class ShowtimeManagementViewModel: ObservableObject {
         return formatter.string(from: date)
     }
     
-    func loadBookingRecords(for date: Date) {
-        guard !isLoading else { return }
-        
-        isLoading = true
-        let dateString = formatDateForQuery(date)
-        
-        Task { @MainActor in
-            defer { isLoading = false }
-            
-            do {
-                let records = try await loadRecords(for: dateString)
-                
-                if records.isEmpty {
-                    self.showtimes = []
-                    self.filteredShowtimes = []
-                } else {
-                    self.showtimes = records.map(convertToShowtime)
-                    self.filterShowtimes(date: date, status: self.selectedStatus)
-                }
-            } catch {
-                self.showtimes = []
-                self.filteredShowtimes = []
-                
-                if !(error is URLError) {
-                    self.error = error
-                }
-            }
+    
+    func hasData(for dateComponents: DateComponents) -> Bool {
+        return datesWithData.contains { components in
+            // 直接比對完整的日期組件
+            return components.year == dateComponents.year &&
+                   components.month == dateComponents.month &&
+                   components.day == dateComponents.day
         }
     }
+    
     
     func filterShowtimes(date: Date, status: MovieShowtime.ShowtimeStatus?) {
         let calendar = Calendar.current
@@ -239,6 +217,110 @@ class ShowtimeManagementViewModel: ObservableObject {
         剩餘座位: \(showtime.availableSeats)
         狀態: \(showtime.status.rawValue)
         """
+    }
+    
+
+        
+        func isDateHasData(_ date: Date) -> Bool {
+            let calendar = Calendar.current
+            let components = calendar.dateComponents([.year, .month, .day], from: date)
+            return datesWithData.contains { storedComponents in
+                return storedComponents.year == components.year &&
+                       storedComponents.month == components.month &&
+                       storedComponents.day == components.day
+            }
+        }
+        
+        @MainActor
+        private func updateDatesWithData(_ date: Date) {
+            let calendar = Calendar.current
+            let dateComponents = calendar.dateComponents([.year, .month, .day], from: date)
+            if !datesWithData.contains(where: { $0 == dateComponents }) {
+                datesWithData.insert(dateComponents)
+            }
+        }
+    
+    
+}
+
+
+extension ShowtimeManagementViewModel {
+    @MainActor
+    private func updateDatesWithData(_ date: Date, withRecords records: [BookingRecord]) {
+        if !records.isEmpty {
+            let calendar = Calendar.current
+            let dateComponents = calendar.dateComponents([.year, .month, .day], from: date)
+            // 確保不重複添加
+            if !datesWithData.contains(dateComponents) {
+                datesWithData.insert(dateComponents)
+                print("✅ 更新日期數據：\(datesWithData)")
+            }
+        }
+    }
+    
+    func loadBookingRecords(for date: Date) {
+        guard !isLoading else { return }
+        isLoading = true
+        
+        let calendar = Calendar.current
+        let month = calendar.component(.month, from: date)
+        let year = calendar.component(.year, from: date)
+        
+        var components = DateComponents()
+        components.year = year
+        components.month = month
+        components.day = 1
+        
+        guard let startOfMonth = calendar.date(from: components),
+              let endOfMonth = calendar.date(byAdding: DateComponents(month: 1, day: -1), to: startOfMonth) else {
+            return
+        }
+        
+        let startDateString = formatDateForQuery(startOfMonth)
+        let endDateString = formatDateForQuery(endOfMonth)
+        
+        Task { @MainActor in
+            defer { isLoading = false }
+            do {
+                let records = try await loadRecords(for: startDateString)
+                if !records.isEmpty {
+                    // 修改 forEach 為同步操作
+                    for record in records {
+                        if let recordDate = parseDate(record.showDate) {
+                            // 移除 await 關鍵字，確保 updateDatesWithData 是同步函數
+                            updateDatesWithData(recordDate, withRecords: [record])
+                        }
+                    }
+                }
+                updateShowtimesForCurrentDate(records)
+            } catch {
+                print("❌ 載入失敗：\(error)")
+                // 移除 handleError 調用，直接處理錯誤
+                print("Error details: \(error.localizedDescription)")
+            }
+        }
+    }
+    
+    
+    
+    private func parseDate(_ dateString: String) -> Date? {
+        let formatter = DateFormatter()
+        formatter.dateFormat = "yyyy/MM/dd"
+        return formatter.date(from: dateString)
+    }
+    
+    private func updateShowtimesForCurrentDate(_ records: [BookingRecord]) {
+        // 只更新當前選中日期的場次
+        let currentDateString = formatDateForQuery(selectedDate)
+        let currentDateRecords = records.filter { $0.showDate == currentDateString }
+        
+        if currentDateRecords.isEmpty {
+            self.showtimes = []
+            self.filteredShowtimes = []
+        } else {
+            self.showtimes = currentDateRecords.map(convertToShowtime)
+            self.filterShowtimes(date: selectedDate, status: selectedStatus)
+        }
     }
     
 }

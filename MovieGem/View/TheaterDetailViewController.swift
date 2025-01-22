@@ -2,7 +2,6 @@ import UIKit
 
 class TheaterDetailViewController: UIViewController {
     private let theater: Theater
-//    private let viewModel: MovieSheetViewModel
     private let viewModel: TheaterDetailViewModel
     private var movies: [MovieSheetData] = []
     
@@ -33,20 +32,6 @@ class TheaterDetailViewController: UIViewController {
         fatalError("init(coder:) has not been implemented")
     }
     
-//    init(theater: Theater, sheetsService: GoogleSheetsServiceProtocol) {
-//        self.viewModel = TheaterDetailViewModel(theater: theater, sheetsService: sheetsService)
-//        super.init(nibName: nil, bundle: nil)
-//    }
-//    
-//    init(theater: Theater, viewModel: MovieSheetViewModel) {
-//        self.theater = theater
-//        self.viewModel = viewModel
-//        super.init(nibName: nil, bundle: nil)
-//    }
-//    
-//    required init?(coder: NSCoder) {
-//        fatalError("init(coder:) has not been implemented")
-//    }
     
     private func configureTheaterInfo() {
         // 直接使用 ViewModel 的屬性
@@ -82,15 +67,6 @@ class TheaterDetailViewController: UIViewController {
         ])
     }
     
-//    private func configureTheaterInfo() {
-//        theaterInfoLabel.text = """
-//        影廳名稱: \(theater.name)
-//        座位數: \(theater.capacity)
-//        類型: \(theater.type.rawValue)
-//        狀態: \(theater.status.rawValue)
-//        """
-//    }
-    
     private func fetchMovieData() {
         viewModel.fetchMovieData()
         
@@ -102,19 +78,6 @@ class TheaterDetailViewController: UIViewController {
             .store(in: &viewModel.cancellables)
     }
     
-//    private func fetchMovieData() {
-//        // 使用現有的 ViewModel 獲取電影資料
-//        viewModel.fetchMovieData()
-//        
-//        // 監聽數據變化
-//        viewModel.$movies
-//            .receive(on: DispatchQueue.main)
-//            .sink { [weak self] movies in
-//                self?.movies = movies
-//                self?.tableView.reloadData()
-//            }
-//            .store(in: &viewModel.cancellables)
-//    }
 }
 
 // MARK: - UITableViewDataSource & Delegate
@@ -130,27 +93,6 @@ extension TheaterDetailViewController: UITableViewDataSource, UITableViewDelegat
         cell.textLabel?.text = viewModel.getMovieCellText(movie)
         return cell
     }
+
     
-//    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-//        let cell = tableView.dequeueReusableCell(withIdentifier: "TheaterDetailCell", for: indexPath)
-//        let movie = movies[indexPath.row]
-//        cell.textLabel?.numberOfLines = 0
-//        cell.textLabel?.text = viewModel.getMovieCellText(movie)
-//        return cell
-//    }
-    
-//    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-//        let cell = tableView.dequeueReusableCell(withIdentifier: "TheaterDetailCell", for: indexPath)
-//        let movie = movies[indexPath.row]
-//        
-//        cell.textLabel?.numberOfLines = 0
-//        cell.textLabel?.text = """
-//        電影: \(movie.movieName)
-//        日期: \(movie.showDate)
-//        時間: \(movie.showTime)
-//        座位: \(movie.seats)
-//        """
-//        
-//        return cell
-//    }
 }
