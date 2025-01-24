@@ -95,7 +95,14 @@ class GoogleSheetsService: GoogleSheetsServiceProtocol {
         return try decoder.decode([MovieSheetData].self, from: data)
     }
     
+    
+    
+    
     func fetchBookingRecords(for date: String, completion: @escaping (Result<[BookingRecord], Error>) -> Void) {
+        
+        print("🌐 API 請求網址：\(apiEndpoint)")
+        print("📅 請求日期：\(date)")
+        
         guard var components = URLComponents(string: apiEndpoint) else {
             completion(.failure(URLError(.badURL)))
             return
@@ -155,6 +162,7 @@ class GoogleSheetsService: GoogleSheetsServiceProtocol {
                 completion(.failure(error))
             }
         }
+        print("📍 完整 URL：\(url)")
         
         task.resume()
     }
