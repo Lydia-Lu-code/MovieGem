@@ -22,26 +22,35 @@
         </dict>
     </dict>
     
+    <!-- Google Sign-In 設定 -->
+    <key>CFBundleURLTypes</key>
+    <array>
+        <dict>
+            <key>CFBundleURLSchemes</key>
+            <array>
+                <string>com.googleusercontent.apps.689998058857-dhr9vlrto1uu3qh99sc06pgc1phaeenb</string>
+            </array>
+        </dict>
+    </array>
+    
+    <!-- Google Client ID -->
+    <key>585711013780-s13g1hm58ts97hul51gmjetgll73bf68.apps.googleusercontent.com</key>
+    <string>689998058857-dhr9vlrto1uu3qh99sc06pgc1phaeenb.apps.googleusercontent.com</string>
+    
     <key>NSAppTransportSecurity</key>
     <dict>
+        <key>NSAllowsArbitraryLoads</key>
+        <true/>
         <key>NSExceptionDomains</key>
         <dict>
-            <key>sheetdb.io</key>
+            <key>googleapis.com</key>
             <dict>
-                <key>NSExceptionAllowsInsecureHTTPLoads</key>
-                <true/>
                 <key>NSIncludesSubdomains</key>
                 <true/>
-                <key>NSExceptionRequiresForwardSecrecy</key>
-                <false/>
+                <key>NSTemporaryExceptionAllowsInsecureHTTPLoads</key>
+                <true/>
             </dict>
         </dict>
-        <key>NSAllowsArbitraryLoads</key>
-        <false/>
-        <key>NSAllowsArbitraryLoadsForMedia</key>
-        <false/>
-        <key>NSAllowsArbitraryLoadsInWebContent</key>
-        <false/>
     </dict>
 </dict>
 </plist>
@@ -70,39 +79,36 @@
 <!--        </dict>-->
 <!--    </dict>-->
 <!--    -->
-<!--    <!-- 添加網路權限 -->-->
+<!--    <!-- Google Sign-In 設定 -->-->
+<!--    <key>CFBundleURLTypes</key>-->
+<!--    <array>-->
+<!--        <dict>-->
+<!--            <key>CFBundleURLSchemes</key>-->
+<!--            <array>-->
+<!--                <string>com.googleusercontent.apps.689998058857-dhr9vlrto1uu3qh99sc06pgc1phaeenb</string>-->
+<!--            </array>-->
+<!--        </dict>-->
+<!--    </array>-->
+<!--    -->
+<!--    <!-- Google Client ID -->-->
+<!--    <key>GIDClientID</key>-->
+<!--    <string>689998058857-dhr9vlrto1uu3qh99sc06pgc1phaeenb.apps.googleusercontent.com</string>-->
+<!--    -->
+<!--    <!-- 網路安全設定 -->-->
 <!--    <key>NSAppTransportSecurity</key>-->
 <!--    <dict>-->
 <!--        <key>NSAllowsArbitraryLoads</key>-->
 <!--        <true/>-->
+<!--        <key>NSExceptionDomains</key>-->
+<!--        <dict>-->
+<!--            <key>googleapis.com</key>-->
+<!--            <dict>-->
+<!--                <key>NSIncludesSubdomains</key>-->
+<!--                <true/>-->
+<!--                <key>NSTemporaryExceptionAllowsInsecureHTTPLoads</key>-->
+<!--                <true/>-->
+<!--            </dict>-->
+<!--        </dict>-->
 <!--    </dict>-->
-<!--</dict>-->
-<!--</plist>-->
-<!---->
-
-<!--﻿/﻿/﻿/﻿/﻿﻿/﻿/﻿/﻿/-->
-<!--<?xml version="1.0" encoding="UTF-8"?>-->
-<!--<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">-->
-<!--<plist version="1.0">-->
-<!--<dict>-->
-<!--	<key>UIApplicationSceneManifest</key>-->
-<!--	<dict>-->
-<!--		<key>UIApplicationSupportsMultipleScenes</key>-->
-<!--		<false/>-->
-<!--		<key>UISceneConfigurations</key>-->
-<!--		<dict>-->
-<!--			<key>UIWindowSceneSessionRoleApplication</key>-->
-<!--			<array>-->
-<!--				<dict>-->
-<!--					<key>UISceneConfigurationName</key>-->
-<!--					<string>Default Configuration</string>-->
-<!--					<key>UISceneDelegateClassName</key>-->
-<!--					<string>$(PRODUCT_MODULE_NAME).SceneDelegate</string>-->
-<!--					<key>UISceneStoryboardFile</key>-->
-<!--					<string>Main</string>-->
-<!--				</dict>-->
-<!--			</array>-->
-<!--		</dict>-->
-<!--	</dict>-->
 <!--</dict>-->
 <!--</plist>-->

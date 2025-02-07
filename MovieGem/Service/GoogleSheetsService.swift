@@ -1,35 +1,15 @@
-//
-//  GoogleSheetsService.swift
-//  MovieGem
-//
-//  Created by Lydia Lu on 2025/1/13.
-//
-
 import Foundation
-import UIKit
 import Combine
 
-struct BookingRecord: Codable {
-    let date: String
-    let movieName: String
-    let showDate: String
-    let showTime: String
-    let numberOfTickets: String
-    let ticketType: String
-    let seats: String
-    let totalAmount: String
-    
-    private enum CodingKeys: String, CodingKey {
-        case date = "訂票日期"
-        case movieName = "電影名稱"
-        case showDate = "場次日期"
-        case showTime = "場次時間"
-        case numberOfTickets = "人數"
-        case ticketType = "票種"
-        case seats = "座位"
-        case totalAmount = "總金額"
-    }
+
+protocol MovieBookingDataService {
+//    func fetchMovieBookings(for date: String) async throws -> [BookingRecord]
+    func fetchMovieBookings() async throws -> [BookingRecord]
+    func addBooking(_ booking: BookingRecord) async throws
+    func updateBooking(_ booking: BookingRecord) async throws
+    func deleteBooking(_ date: String, movieName: String) async throws
 }
+
 
 protocol GoogleSheetsServiceProtocol {
     func fetchData(for date: Date?) async throws -> [MovieSheetData]
@@ -47,7 +27,8 @@ struct SheetDBConfig {
     static let sheetName = "MovieBookingData"
 }
 
-class GoogleSheetsService: GoogleSheetsServiceProtocol {
+//class GoogleSheetsService: GoogleSheetsServiceProtocol {
+class GoogleSheetsService: GoogleSheetsServiceProtocol, MovieBookingDataService {
     private let apiEndpoint: String
     private let session: URLSession
     
@@ -198,6 +179,44 @@ class GoogleSheetsService: GoogleSheetsServiceProtocol {
             throw URLError(.badServerResponse)
         }
     }
+    
+    // 新增 MovieBookingDataService 協定要求的方法
+    func fetchMovieBookings() async throws -> [BookingRecord] {
+        return try await withCheckedThrowingContinuation { continuation in
+            let currentDate = Date()
+            let dateFormatter = DateFormatter()
+            dateFormatter.dateFormat = "yyyy/MM/dd"
+            let dateString = dateFormatter.string(from: currentDate)
+            
+            fetchBookingRecords(for: dateString) { result in
+                switch result {
+                case .success(let records):
+                    continuation.resume(returning: records)
+                case .failure(let error):
+                    continuation.resume(throwing: error)
+                }
+            }
+        }
+    }
+    
+    func addBooking(_ booking: BookingRecord) async throws {
+        // 實作新增預訂的邏輯
+        print("新增預訂紀錄:", booking)
+    }
+    
+    func updateBooking(_ booking: BookingRecord) async throws {
+        // 實作更新預訂的邏輯
+        print("更新預訂紀錄:", booking)
+    }
+    
+    func deleteBooking(_ date: String, movieName: String) async throws {
+        // 實作刪除預訂的邏輯
+        print("刪除預訂紀錄，日期:", date, "電影:", movieName)
+    }
+    
+
+    
+    
 }
 
 

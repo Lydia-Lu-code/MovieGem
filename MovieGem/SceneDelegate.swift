@@ -6,29 +6,35 @@
 //
 
 import UIKit
+import GoogleSignIn
 
 class SceneDelegate: UIResponder, UIWindowSceneDelegate {
 
     var window: UIWindow?
     
     func scene(_ scene: UIScene, willConnectTo session: UISceneSession, options connectionOptions: UIScene.ConnectionOptions) {
-        if let windowScene = scene as? UIWindowScene {
-            let window = UIWindow(windowScene: windowScene)
-            
-            // 創建 MovieAdminViewController
-            let movieAdminViewController = MovieAdminViewController()
-            
-            // 使用導航控制器包裝 MovieAdminViewController
-            let navigationController = UINavigationController(rootViewController: movieAdminViewController)
-            
-            // 設置根視圖控制器為導航控制器
-            window.rootViewController = navigationController
-            
-            self.window = window
-            window.makeKeyAndVisible()
-        }
+        guard let windowScene = scene as? UIWindowScene else { return }
+        
+        let window = UIWindow(windowScene: windowScene)
+        
+        // 創建 MovieAdminViewController
+        let movieAdminViewController = MovieAdminViewController()
+        
+        // 使用導航控制器包裝 MovieAdminViewController
+        let navigationController = UINavigationController(rootViewController: movieAdminViewController)
+        
+        // 設置根視圖控制器為導航控制器
+        window.rootViewController = navigationController
+        
+        self.window = window
+        window.makeKeyAndVisible()
     }
 
+    // 添加處理 Google Sign-In 回調的方法
+    func scene(_ scene: UIScene, openURLContexts URLContexts: Set<UIOpenURLContext>) {
+        guard let url = URLContexts.first?.url else { return }
+        GIDSignIn.sharedInstance.handle(url)
+    }
     func sceneDidDisconnect(_ scene: UIScene) {
         // Called as the scene is being released by the system.
         // This occurs shortly after the scene enters the background, or when its session is discarded.
@@ -57,5 +63,6 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         // to restore the scene back to its current state.
     }
 
+    
 
 }

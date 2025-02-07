@@ -1,35 +1,45 @@
-//
-//  AppDelegate.swift
-//  MovieGem
-//
-//  Created by Lydia Lu on 2025/1/9.
-//
-
 import UIKit
+import GoogleSignIn
 
 @main
 class AppDelegate: UIResponder, UIApplicationDelegate {
-
-
-
-    func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
-        // Override point for customization after application launch.
+    
+    func application(_ application: UIApplication,
+                    didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
+        
+//        if let clientID = Bundle.main.object(forInfoDictionaryKey: "GIDClientID") as? String {
+        if let clientID = Bundle.main.object(forInfoDictionaryKey: "585711013780-s13g1hm58ts97hul51gmjetgll73bf68.apps.googleusercontent.com") as? String {
+            GIDSignIn.sharedInstance.configuration = GIDConfiguration(clientID: clientID)
+        }
         return true
     }
 
-    // MARK: UISceneSession Lifecycle
+    func application(_ app: UIApplication,
+                    open url: URL,
+                    options: [UIApplication.OpenURLOptionsKey : Any] = [:]) -> Bool {
+        var handled: Bool
+        handled = GIDSignIn.sharedInstance.handle(url)
+        return handled
+    }
 
-    func application(_ application: UIApplication, configurationForConnecting connectingSceneSession: UISceneSession, options: UIScene.ConnectionOptions) -> UISceneConfiguration {
-        // Called when a new scene session is being created.
-        // Use this method to select a configuration to create the new scene with.
+    func application(_ application: UIApplication,
+                    configurationForConnecting connectingSceneSession: UISceneSession,
+                    options: UIScene.ConnectionOptions) -> UISceneConfiguration {
         return UISceneConfiguration(name: "Default Configuration", sessionRole: connectingSceneSession.role)
     }
 
     func application(_ application: UIApplication, didDiscardSceneSessions sceneSessions: Set<UISceneSession>) {
-        // Called when the user discards a scene session.
-        // If any sessions were discarded while the application was not running, this will be called shortly after application:didFinishLaunchingWithOptions.
-        // Use this method to release any resources that were specific to the discarded scenes, as they will not return.
     }
-
-
 }
+
+// Google Sign-In 處理
+extension AppDelegate {
+    func signIn(_ signInClient: GIDSignIn!, didSignInFor user: GIDGoogleUser!, withError error: Error!) {
+        if let error = error {
+            print("登入錯誤：\(error.localizedDescription)")
+            return
+        }
+        // 處理登入成功
+    }
+}
+
