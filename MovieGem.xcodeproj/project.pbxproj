@@ -8,9 +8,9 @@
 
 /* Begin PBXBuildFile section */
 		3B8C29BCFF127744A3250C3A /* Pods_MovieGem.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 352EB7ADB4CDC4224F67B98A /* Pods_MovieGem.framework */; };
-		5C4466F32D55D3E8004EB92B /* MovieTicketViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5C4466F22D55D3E8004EB92B /* MovieTicketViewModel.swift */; };
 		5C4466F72D5710C0004EB92B /* DateFormatters.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5C4466F62D5710C0004EB92B /* DateFormatters.swift */; };
-		5C53C1F92D4383B30082A145 /* GoogleSheetsConfig.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5C53C1F82D4383B30082A145 /* GoogleSheetsConfig.swift */; };
+		5C4466FD2D57192C004EB92B /* MovieAdminViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5C4466FC2D57192C004EB92B /* MovieAdminViewModel.swift */; };
+		5C4466FF2D571947004EB92B /* MovieSheetCellViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5C4466FE2D571947004EB92B /* MovieSheetCellViewModel.swift */; };
 		5C53C1FB2D4386090082A145 /* BookingModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5C53C1FA2D4386090082A145 /* BookingModels.swift */; };
 		5CEDC1712D2FC9C10072E8BF /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5CEDC1702D2FC9C10072E8BF /* AppDelegate.swift */; };
 		5CEDC1732D2FC9C10072E8BF /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5CEDC1722D2FC9C10072E8BF /* SceneDelegate.swift */; };
@@ -40,9 +40,9 @@
 
 /* Begin PBXFileReference section */
 		352EB7ADB4CDC4224F67B98A /* Pods_MovieGem.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_MovieGem.framework; sourceTree = BUILT_PRODUCTS_DIR; };
-		5C4466F22D55D3E8004EB92B /* MovieTicketViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MovieTicketViewModel.swift; sourceTree = "<group>"; };
 		5C4466F62D5710C0004EB92B /* DateFormatters.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DateFormatters.swift; sourceTree = "<group>"; };
-		5C53C1F82D4383B30082A145 /* GoogleSheetsConfig.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GoogleSheetsConfig.swift; sourceTree = "<group>"; };
+		5C4466FC2D57192C004EB92B /* MovieAdminViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MovieAdminViewModel.swift; sourceTree = "<group>"; };
+		5C4466FE2D571947004EB92B /* MovieSheetCellViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MovieSheetCellViewModel.swift; sourceTree = "<group>"; };
 		5C53C1FA2D4386090082A145 /* BookingModels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BookingModels.swift; sourceTree = "<group>"; };
 		5CEDC16D2D2FC9C10072E8BF /* MovieGem.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = MovieGem.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		5CEDC1702D2FC9C10072E8BF /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
@@ -86,6 +86,38 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		5C4466F82D57178C004EB92B /* Utilities */ = {
+			isa = PBXGroup;
+			children = (
+				5C4466F62D5710C0004EB92B /* DateFormatters.swift */,
+			);
+			path = Utilities;
+			sourceTree = "<group>";
+		};
+		5C4466FA2D571834004EB92B /* ViewControllers */ = {
+			isa = PBXGroup;
+			children = (
+				5CEDC1B02D362D560072E8BF /* MovieAdminViewController.swift */,
+				5CEDC1AB2D34FA6B0072E8BF /* MovieSheetViewController.swift */,
+				5CEDC1B62D3644290072E8BF /* ShowtimeManagementViewController.swift */,
+				5CEDC1C22D364ABE0072E8BF /* PriceManagementViewController.swift */,
+				5CEDC1C62D364E900072E8BF /* TheaterDetailViewController.swift */,
+				5CEDC1D42D38CB800072E8BF /* TheaterManagementViewController.swift */,
+			);
+			path = ViewControllers;
+			sourceTree = "<group>";
+		};
+		5C4466FB2D571840004EB92B /* Cell */ = {
+			isa = PBXGroup;
+			children = (
+				5CEDC1AE2D3626B40072E8BF /* MovieSheettCell.swift */,
+				5CEDC1B82D3648470072E8BF /* ShowtimeTableViewCell.swift */,
+				5CEDC1BE2D364A5D0072E8BF /* PriceTableViewCell.swift */,
+				5CEDC1C02D364A7C0072E8BF /* DiscountTableViewCell.swift */,
+			);
+			path = Cell;
+			sourceTree = "<group>";
+		};
 		5CEDC1642D2FC9C10072E8BF = {
 			isa = PBXGroup;
 			children = (
@@ -109,6 +141,7 @@
 			children = (
 				5CEDC1702D2FC9C10072E8BF /* AppDelegate.swift */,
 				5CEDC1722D2FC9C10072E8BF /* SceneDelegate.swift */,
+				5C4466F82D57178C004EB92B /* Utilities */,
 				5CEDC19B2D3119050072E8BF /* Model */,
 				5CEDC19D2D3119420072E8BF /* Service */,
 				5CEDC19C2D31192D0072E8BF /* ViewModel */,
@@ -133,7 +166,8 @@
 		5CEDC19C2D31192D0072E8BF /* ViewModel */ = {
 			isa = PBXGroup;
 			children = (
-				5C4466F22D55D3E8004EB92B /* MovieTicketViewModel.swift */,
+				5C4466FC2D57192C004EB92B /* MovieAdminViewModel.swift */,
+				5C4466FE2D571947004EB92B /* MovieSheetCellViewModel.swift */,
 				5CEDC1A42D34F9570072E8BF /* MovieSheetViewModel.swift */,
 				5CEDC1D22D38CB650072E8BF /* ShowtimeManagementViewModel.swift */,
 				5CEDC1BA2D3649480072E8BF /* PriceManagementViewModel.swift */,
@@ -148,9 +182,7 @@
 			children = (
 				5CEDC1862D2FC9ED0072E8BF /* MovieTicketService.swift */,
 				5CEDC1A22D34F9100072E8BF /* GoogleSheetsService.swift */,
-				5C4466F62D5710C0004EB92B /* DateFormatters.swift */,
 				5CEDC1BC2D3649720072E8BF /* PriceService.swift */,
-				5C53C1F82D4383B30082A145 /* GoogleSheetsConfig.swift */,
 			);
 			path = Service;
 			sourceTree = "<group>";
@@ -158,16 +190,8 @@
 		5CEDC1AD2D36268F0072E8BF /* View */ = {
 			isa = PBXGroup;
 			children = (
-				5CEDC1AE2D3626B40072E8BF /* MovieSheettCell.swift */,
-				5CEDC1B82D3648470072E8BF /* ShowtimeTableViewCell.swift */,
-				5CEDC1BE2D364A5D0072E8BF /* PriceTableViewCell.swift */,
-				5CEDC1C02D364A7C0072E8BF /* DiscountTableViewCell.swift */,
-				5CEDC1B02D362D560072E8BF /* MovieAdminViewController.swift */,
-				5CEDC1AB2D34FA6B0072E8BF /* MovieSheetViewController.swift */,
-				5CEDC1B62D3644290072E8BF /* ShowtimeManagementViewController.swift */,
-				5CEDC1C22D364ABE0072E8BF /* PriceManagementViewController.swift */,
-				5CEDC1C62D364E900072E8BF /* TheaterDetailViewController.swift */,
-				5CEDC1D42D38CB800072E8BF /* TheaterManagementViewController.swift */,
+				5C4466FB2D571840004EB92B /* Cell */,
+				5C4466FA2D571834004EB92B /* ViewControllers */,
 			);
 			path = View;
 			sourceTree = "<group>";
@@ -322,9 +346,9 @@
 				5CEDC1CD2D377D4D0072E8BF /* TheaterDetailViewModel.swift in Sources */,
 				5CEDC1872D2FC9ED0072E8BF /* MovieTicketService.swift in Sources */,
 				5CEDC1D12D38CB490072E8BF /* TheaterManagementViewModel.swift in Sources */,
-				5C4466F32D55D3E8004EB92B /* MovieTicketViewModel.swift in Sources */,
 				5CEDC1BF2D364A5D0072E8BF /* PriceTableViewCell.swift in Sources */,
-				5C53C1F92D4383B30082A145 /* GoogleSheetsConfig.swift in Sources */,
+				5C4466FF2D571947004EB92B /* MovieSheetCellViewModel.swift in Sources */,
+				5C4466FD2D57192C004EB92B /* MovieAdminViewModel.swift in Sources */,
 				5CEDC1B72D3644290072E8BF /* ShowtimeManagementViewController.swift in Sources */,
 				5CEDC1732D2FC9C10072E8BF /* SceneDelegate.swift in Sources */,
 				5CEDC1D32D38CB650072E8BF /* ShowtimeManagementViewModel.swift in Sources */,
