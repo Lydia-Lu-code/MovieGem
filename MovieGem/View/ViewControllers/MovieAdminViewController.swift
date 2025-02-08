@@ -153,8 +153,8 @@ class MovieAdminViewController: UIViewController {
                 // 使用正確的方法獲取數據
                 let records = try await movieSheetViewController.viewModel.sheetsService.fetchMovieBookings()
                 
-                print("已獲取資料數量：\(records.count)")
-                print("篩選日期：\(date)")
+//                print("已獲取資料數量：\(records.count)")
+//                print("篩選日期：\(date)")
                 
                 await MainActor.run {
                     if records.isEmpty {
@@ -197,7 +197,7 @@ class MovieAdminViewController: UIViewController {
             } catch {
                 await MainActor.run {
                     // 無法連結到資料源
-                    print("載入錯誤：\(error)")
+//                    print("載入錯誤：\(error)")
                     
                     // 確保錯誤訊息是 "加載失敗"
                     movieSheetViewController.viewModel.error = NSError(
@@ -264,7 +264,7 @@ class MovieAdminViewController: UIViewController {
     // MARK: - 動作方法
     @objc private func performPrimaryAction() {
         // 這裡可以在未來實作新增邏輯
-        print("主要動作按鈕被觸發，當前分頁：\(segmentedControl.selectedSegmentIndex)")
+//        print("主要動作按鈕被觸發，當前分頁：\(segmentedControl.selectedSegmentIndex)")
     }
     
     private func updateActionButton(for index: Int) {

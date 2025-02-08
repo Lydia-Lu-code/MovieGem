@@ -11,7 +11,6 @@ class ShowtimeTableViewCell: UITableViewCell {
     // MARK: - UI Components
     private let containerView: UIView = {
         let view = UIView()
-        view.backgroundColor = .systemBackground
         view.layer.cornerRadius = 8
         view.layer.shadowColor = UIColor.black.cgColor
         view.layer.shadowOffset = CGSize(width: 0, height: 2)
@@ -23,6 +22,7 @@ class ShowtimeTableViewCell: UITableViewCell {
     
     private let stackView: UIStackView = {
         let stack = UIStackView()
+
         stack.axis = .vertical
         stack.spacing = 8
         stack.translatesAutoresizingMaskIntoConstraints = false

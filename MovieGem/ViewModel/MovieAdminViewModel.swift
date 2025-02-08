@@ -32,12 +32,12 @@ class MovieAdminViewModel: ObservableObject {
             await MainActor.run {
                 // 處理成功的情況
                 print("已獲取資料數量：\(records.count)")
-                print("篩選日期：\(date)")
+//                print("篩選日期：\(date)")
             }
         } catch {
             await MainActor.run {
                 errorMessage = "加載失敗"
-                print("載入錯誤：\(error)")
+//                print("載入錯誤：\(error)")
             }
         }
     }

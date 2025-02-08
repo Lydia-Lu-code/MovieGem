@@ -36,7 +36,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 extension AppDelegate {
     func signIn(_ signInClient: GIDSignIn!, didSignInFor user: GIDGoogleUser!, withError error: Error!) {
         if let error = error {
-            print("登入錯誤：\(error.localizedDescription)")
+//            print("登入錯誤：\(error.localizedDescription)")
             return
         }
         // 處理登入成功
