@@ -28,12 +28,10 @@ struct Theater: Codable, Identifiable {
         case empty = "空位"
     }
     
-    // 計算可用座位數
     var availableSeats: Int {
         return seatLayout.flatMap { $0 }.filter { $0 == .empty }.count
     }
     
-    // 是否可以使用
     var isAvailable: Bool {
         return status == .active
     }
@@ -83,7 +81,6 @@ struct ShowtimePrice: Codable {
     var seniorPrice: Double?
     var childPrice: Double?
     var vipPrice: Double?
-    
     var discounts: [PriceDiscount]
 }
 
@@ -99,38 +96,6 @@ struct PriceDiscount: Codable, Identifiable {
     enum DiscountType: String, Codable {
         case percentage = "折扣百分比"
         case fixedAmount = "固定金額"
-    }
-}
-
-struct Booking: Codable, Identifiable {
-    let id: String
-    var showtimeId: String
-    var seats: [BookingSeat]
-    var totalAmount: Double
-    var status: BookingStatus
-    var createdAt: Date
-    var paymentStatus: PaymentStatus
-    
-    struct BookingSeat: Codable {
-        let row: Int
-        let column: Int
-        let type: Theater.SeatType
-        let price: Double
-    }
-    
-    enum BookingStatus: String, Codable {
-        case pending = "待付款"
-        case confirmed = "已確認"
-        case canceled = "已取消"
-        case completed = "已完成"
-    }
-    
-    enum PaymentStatus: String, Codable {
-        case pending = "待付款"
-        case processing = "處理中"
-        case completed = "已完成"
-        case failed = "失敗"
-        case refunded = "已退款"
     }
 }
 

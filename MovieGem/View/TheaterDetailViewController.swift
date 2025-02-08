@@ -3,7 +3,7 @@ import UIKit
 class TheaterDetailViewController: UIViewController {
     private let theater: Theater
     private let viewModel: TheaterDetailViewModel
-    private var movies: [MovieSheetData] = []
+    private var movies: [BookingRecord] = []
     
     // UI 元件
     private lazy var tableView: UITableView = {

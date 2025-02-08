@@ -2,13 +2,15 @@ import Foundation
 import Combine
 
 class TheaterDetailViewModel: ObservableObject {
-    @Published var movies: [MovieSheetData] = []
+    @Published var movies: [BookingRecord] = []
     @Published var isLoading = false
     @Published var error: Error?
+    @Published var bookings: [BookingRecord] = []
     
     private let theater: Theater
     private let sheetsService: MovieBookingDataService
     var cancellables = Set<AnyCancellable>()
+    
     
     init(theater: Theater, sheetsService: MovieBookingDataService = GoogleSheetsService() as! MovieBookingDataService) {
         self.theater = theater
@@ -17,23 +19,25 @@ class TheaterDetailViewModel: ObservableObject {
     
     func fetchMovieData(for date: Date = Date()) {
         isLoading = true
-        let dateString = DateFormatter.dateFormatter.string(from: date)
+        let dateString = DateFormatters.dateFormatter.string(from: date)
         
         Task {
             do {
-//                let records = try await sheetsService.fetchMovieBookings(for: dateString)
+
                 let records = try await sheetsService.fetchMovieBookings()
                 let movieData = records.map { record in
-                    MovieSheetData(
-                        bookingDate: record.date,
+                    BookingRecord(
+                        id: UUID().uuidString,
+                        bookingDate: DateFormatters.dateFormatter.string(from: record.date ?? Date()),
                         movieName: record.movieName,
                         showDate: record.showDate,
                         showTime: record.showTime,
-                        numberOfPeople: record.numberOfTickets,
+                        numberOfTickets: record.numberOfTickets,
                         ticketType: record.ticketType,
                         seats: record.seats,
                         totalAmount: record.totalAmount
                     )
+                    
                 }
                 let filteredMovies = movieData.filter { $0.seats.contains(theater.name) }
                 
@@ -59,20 +63,12 @@ class TheaterDetailViewModel: ObservableObject {
         """
     }
 
-    func getMovieCellText(_ movie: MovieSheetData) -> String {
+    func getMovieCellText(_ booking: BookingRecord) -> String {
         return """
-        電影: \(movie.movieName)
-        日期: \(movie.showDate)
-        時間: \(movie.showTime)
-        座位: \(movie.seats)
+        電影: \(booking.movieName)
+        日期: \(booking.showDate)
+        時間: \(booking.showTime)
+        座位: \(booking.seats)
         """
     }
-}
-
-private extension DateFormatter {
-    static let dateFormatter: DateFormatter = {
-        let formatter = DateFormatter()
-        formatter.dateFormat = "yyyy/MM/dd"
-        return formatter
-    }()
 }

@@ -76,7 +76,6 @@ class PriceManagementViewController: UIViewController {
         
         view.addSubview(segmentedControl)
         view.addSubview(tableView)
-//        view.addSubview(addButton)
         view.addSubview(loadingIndicator)
         
         NSLayoutConstraint.activate([

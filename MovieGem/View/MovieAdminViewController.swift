@@ -167,16 +167,18 @@ class MovieAdminViewController: UIViewController {
                     } else {
                         // 有資料，正常處理
                         movieSheetViewController.viewModel.movies = records.map { record in
-                            MovieSheetData(
-                                bookingDate: record.date,
+                            BookingRecord(
+                                id: UUID().uuidString,
+                                bookingDate: DateFormatters.dateFormatter.string(from: record.date ?? Date()),
                                 movieName: record.movieName,
                                 showDate: record.showDate,
                                 showTime: record.showTime,
-                                numberOfPeople: record.numberOfTickets,
+                                numberOfTickets: record.numberOfTickets,
                                 ticketType: record.ticketType,
                                 seats: record.seats,
                                 totalAmount: record.totalAmount
                             )
+                            
                         }
                         
                         // reloadData 移到這裡

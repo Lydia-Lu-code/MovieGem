@@ -38,17 +38,11 @@ class ShowtimeManagementViewModel: ObservableObject {
     }
     
     private func loadRecords(for date: String) async throws -> [BookingRecord] {
-        return try await withCheckedThrowingContinuation { continuation in
-            googleSheetsService.fetchBookingRecords(for: date) { result in
-                switch result {
-                case .success(let records):
-                    continuation.resume(returning: records)
-                case .failure(let error):
-                    continuation.resume(throwing: error)
-                }
-            }
-        }
+        // 直接調用 async 方法，不需要使用 continuation
+        return try await googleSheetsService.fetchBookingRecords(for: date)
     }
+    
+
 
     
     func loadBookingRecords(for date: Date) {
@@ -83,10 +77,14 @@ class ShowtimeManagementViewModel: ObservableObject {
         // 組合日期和時間
         let dateFormatter = DateFormatter()
         dateFormatter.dateFormat = "yyyy/MM/dd HH:mm"
-        let startDateTime = dateFormatter.date(from: "\(record.showDate) \(record.showTime)") ?? Date()
+//        let startDateTime = dateFormatter.date(from: "\(record.showDate) \(record.showTime)") ?? Date()
+        let startDateTime = DateFormatters.timeFormatter.date(from: record.showTime) ?? Date()
+
         
         // 假設每場電影時長為 2 小時
+//        let endDateTime = Calendar.current.date(byAdding: .hour, value: 2, to: startDateTime) ?? startDateTime
         let endDateTime = Calendar.current.date(byAdding: .hour, value: 2, to: startDateTime) ?? startDateTime
+            
         
         // 根據票種判斷狀態
         let status: MovieShowtime.ShowtimeStatus = .onSale  // 預設為售票中
@@ -111,6 +109,7 @@ class ShowtimeManagementViewModel: ObservableObject {
             availableSeats: 0  // 因為原始數據沒有座位數量資訊，設為預設值
         )
     }
+    
     
     func updateSelectedStatus(_ status: MovieShowtime.ShowtimeStatus?) {
         selectedStatus = status
@@ -195,11 +194,9 @@ class ShowtimeManagementViewModel: ObservableObject {
     }
     
     private func formatDateForQuery(_ date: Date) -> String {
-        let formatter = DateFormatter()
-        formatter.dateFormat = "yyyy/MM/dd"
-        return formatter.string(from: date)
+        return DateFormatters.dateFormatter.string(from: date)
     }
-    
+
     
     func hasData(for dateComponents: DateComponents) -> Bool {
         return datesWithData.contains { components in

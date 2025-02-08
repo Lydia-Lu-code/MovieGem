@@ -67,7 +67,7 @@ class MovieSheettCell: UITableViewCell {
         ])
     }
     
-    func configure(with movie: MovieSheetData) {
+    func configure(with movie: BookingRecord) {
         movieNameLabel.text = "🎬 \(movie.movieName)"
         dateTimeLabel.text = "📅 \(movie.showDate) \(movie.showTime)"
         seatsLabel.text = "💺 座位：\(movie.seats) (\(movie.ticketType))"

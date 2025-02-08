@@ -1,32 +1,39 @@
 import Foundation
 
+// 更新協議定義
 protocol MovieTicketServiceProtocol {
-    func fetchTickets() async throws -> [MovieTicket]
-    func bookTicket(_ ticket: MovieTicket) async throws -> Bool
+    func fetchTickets() async throws -> [BookingRecord]
+    func bookTicket(_ booking: BookingRecord) async throws -> Bool
 }
 
 class MovieTicketService: MovieTicketServiceProtocol {
-    func fetchTickets() async throws -> [MovieTicket] {
+    func fetchTickets() async throws -> [BookingRecord] {
         try await Task.sleep(nanoseconds: 1_000_000_000)
         
+        // 使用 BookingRecord.sample() 創建範例數據
         return [
-            MovieTicket.sample(),
-            MovieTicket(
+            BookingRecord.sample(),
+            BookingRecord(
                 id: UUID().uuidString,
-                bookingDate: DateFormatter.dateFormatter.string(from: Date()),
+                bookingDate: DateFormatters.dateFormatter.string(from: Date()),
                 movieName: "玩具總動員",
-                showtime: Date().addingTimeInterval(86400),
-                numberOfTickets: 1,
-                seatNumbers: ["B2"],
-                price: 300.0
+                showDate: DateFormatters.dateFormatter.string(from: Date()),
+                showTime: "14:30",
+                numberOfTickets: "1",
+                ticketType: "全票",
+                seats: "B2",
+                totalAmount: "300"
             )
         ]
     }
     
-    func bookTicket(_ ticket: MovieTicket) async throws -> Bool {
+    func bookTicket(_ booking: BookingRecord) async throws -> Bool {
         try await Task.sleep(nanoseconds: 1_000_000_000)
         
-        guard ticket.price > 0, !ticket.seatNumbers.isEmpty else {
+        // 驗證票務資訊
+        guard let amount = Double(booking.totalAmount),
+              amount > 0,
+              !booking.seats.isEmpty else {
             throw BookingError.invalidTicket
         }
         
@@ -43,12 +50,3 @@ class MovieTicketService: MovieTicketServiceProtocol {
         case invalidTicket
     }
 }
-
-private extension DateFormatter {
-    static let dateFormatter: DateFormatter = {
-        let formatter = DateFormatter()
-        formatter.dateFormat = "yyyy/MM/dd"
-        return formatter
-    }()
-}
-
