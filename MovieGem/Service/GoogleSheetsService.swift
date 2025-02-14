@@ -30,9 +30,9 @@ class GoogleSheetsService: MovieBookingDataService {
             throw URLError(.badURL)
         }
         
-//        print("🌐 API 請求網址：\(apiEndpoint)")
-//        print("📅 請求日期：\(date)")
-//        print("📍 完整 URL：\(url)")
+        print("🌐 API 請求網址：\(apiEndpoint)")
+        print("📅 請求日期：\(date)")
+        print("📍 完整 URL：\(url)")
         
         do {
             let (data, response) = try await session.data(from: url)
@@ -46,7 +46,7 @@ class GoogleSheetsService: MovieBookingDataService {
             
             // 印出原始 JSON 資料以供檢查
             if let jsonString = String(data: data, encoding: .utf8) {
-//                print("📦 原始 JSON 資料：")
+                print("📦 原始 JSON 資料：")
                 print(jsonString)
             }
             

@@ -222,4 +222,3 @@ class ShowtimeManagementViewModel: ObservableObject {
     }
     
     }
-
